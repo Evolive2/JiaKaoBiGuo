@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错题记录 - 爱考仕交规</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #fff;
+        }
+        /* 头部导航 与主页面完全一致 */
+        .header {
+            height: 60px;
+            background: linear-gradient(90deg, #1abc9c 0%, #667eea 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 20px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        /* 主体容器 */
+        .container {
+            padding: 20px;
+            min-height: calc(100vh - 60px);
+        }
+        .card {
+            border: 1px solid #eee;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        /* 通用按钮样式 对齐主页面 */
+        .clear-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            background: #F44336;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        th {
+            background: #fafafa;
+            font-weight: bold;
+            color: #333;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        /* 操作按钮组 */
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .btn-practice {
+            background: #3498db;
+            color: white;
+        }
+        .btn-delete {
+            background: #F44336;
+            color: white;
+        }
+        /* 空数据提示 */
+        .empty-tip {
+            padding: 80px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 16px;
+        }
+        /* 弹窗样式 完全复用主页面弹窗风格 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .modal-title {
+            color: #ff4444;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .modal-btns {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel { 
+            background: #eee; 
+            color: #333; 
+        }
+        .btn-confirm { 
+            background: #3498db; 
+            color: white; 
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="location.href='index.html'">&lt; 返回</button>
+            <span>错题记录</span>
+        </div>
+        <div class="header-right">
+            <span>SGYC202613</span>
+            <button class="logout-btn" onclick="logout()">⏻</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <span>错题记录列表</span>
+                <button class="clear-btn" onclick="showClearModal()">清空所有记录</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>交卷时间</th>
+                        <th>车型</th>
+                        <th>科目</th>
+                        <th>套卷名称</th>
+                        <th>总题数</th>
+                        <th>正确数</th>
+                        <th>错误数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="recordTable"></tbody>
+            </table>
+            <div id="emptyTip" class="empty-tip" style="display:none;">
+                暂无错题记录，快去做题吧~
+            </div>
+        </div>
+    </div>
+
+    <!-- 清空记录弹窗 -->
+    <div class="modal" id="clearModal" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-title">确认清空</div>
+            <p>确定要清空所有错题记录吗？此操作不可恢复！</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="hideClearModal()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="clearAllRecords()">确认清空</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除单条记录弹窗 -->
+    <div class="modal" id="deleteModal" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-title">确认删除</div>
+            <p>确定要删除这条记录吗？</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="hideDeleteModal()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="confirmDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// 与主页面存储名称保持一致：errorRecords
+let errorRecords = JSON.parse(localStorage.getItem('errorRecords') || '[]');
+let deleteId = null;
+
+// 渲染错题列表
+function renderRecords() {
+    const table = document.getElementById('recordTable');
+    const emptyTip = document.getElementById('emptyTip');
+
+    if (errorRecords.length === 0) {
+        table.innerHTML = '';
+        emptyTip.style.display = 'block';
+        return;
+    }
+    emptyTip.style.display = 'none';
+
+    let html = '';
+    errorRecords.forEach((r, idx) => {
+        const carType = r.carType || "小车";
+        html += `
+        <tr>
+            <td>${r.time}</td>
+            <td>${carType}</td>
+            <td>${r.subject}</td>
+            <td>${r.paper}</td>
+            <td>${r.total}</td>
+            <td>${r.right}</td>
+            <td>${r.wrong}</td>
+            <td>
+                <button class="btn btn-practice" onclick="practiceWrong(${idx})">错题练习</button>
+                <button class="btn btn-delete" onclick="showDeleteModal(${idx})">删除</button>
+            </td>
+        </tr>`;
+    });
+    table.innerHTML = html;
+}
+
+// 进入错题练习页面（数据传递规则和原逻辑一致）
+function practiceWrong(idx) {
+    const record = errorRecords[idx];
+    if (!record || !record.questions || record.questions.length === 0) {
+        alert("该记录没有错题可练习");
+        return;
+    }
+    localStorage.setItem('tempWrongList', JSON.stringify(record.questions));
+    localStorage.setItem('currWrongRecord', JSON.stringify(record));
+    // 跳转至错题练习页
+    location.href = 'wrong_practice.html';
+}
+
+// 单条删除弹窗
+function showDeleteModal(idx) {
+    deleteId = idx;
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+function hideDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    deleteId = null;
+}
+function confirmDelete() {
+    if (deleteId !== null) {
+        errorRecords.splice(deleteId, 1);
+        localStorage.setItem('errorRecords', JSON.stringify(errorRecords));
+        renderRecords();
+    }
+    hideDeleteModal();
+}
+
+// 清空全部记录弹窗
+function showClearModal() {
+    document.getElementById('clearModal').style.display = 'flex';
+}
+function hideClearModal() {
+    document.getElementById('clearModal').style.display = 'none';
+}
+function clearAllRecords() {
+    localStorage.removeItem('errorRecords');
+    errorRecords = [];
+    renderRecords();
+    hideClearModal();
+}
+
+// 退出登录（和主页面逻辑一致）
+function logout() {
+    if (confirm("确定退出？")) {
+        location.href = "login.html";
+    }
+}
+
+// 页面加载渲染
+window.onload = function() {
+    renderRecords();
+}
+</script>
+</body>
+</html>

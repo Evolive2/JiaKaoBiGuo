@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>驾驶人理论模拟考试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #f0f2f5;
+            padding: 10px;
+        }
+
+        .top-area {
+            display: flex;
+            height: 450px;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-panel {
+            width: 160px;
+            background: white;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+        }
+        .info-header {
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+        }
+        .avatar {
+            width: 100%;
+            height: 120px;
+            background: #222;
+            margin: 10px 0;
+        }
+        .info-list {
+            padding: 10px;
+            font-size: 14px;
+        }
+        .info-list p {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+        }
+        .info-list label {
+            width: 50px;
+        }
+        .info-list input {
+            border: 1px solid #ccc;
+            padding: 4px;
+            width: 80px;
+        }
+        .time-box {
+            margin-top: auto;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+        .time-title {
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+        }
+        .time-value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 8px;
+        }
+
+        .question-panel {
+            flex: 1;
+            background: white;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+        }
+        .question-header {
+            background: #cce5ff;
+            padding: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+        }
+        .question-content {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 17px;
+            line-height: 1.5;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+        .question-content br {
+            margin: 2px 0;
+        }
+
+        .option-area {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-top: 1px solid #ccc;
+        }
+        .option-area label {
+            margin-right: 20px;
+            color: #007bff;
+        }
+        .option-btn-group {
+            display: flex;
+            gap: 20px;
+        }
+        .option-btn {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #999;
+            background: white;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .option-btn.selected {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .option-btn.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .option-btn.wrong {
+            background: #F44336;
+            color: white;
+            border-color: #F44336;
+        }
+
+        .card-panel {
+            width: 280px;
+            background: #eee;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-header {
+            background: #667eea;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .card-table {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 2px;
+            padding: 5px;
+        }
+        .card-cell {
+            background: white;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .card-cell.current {
+            background: #667eea;
+            color: white;
+        }
+        .card-cell.right {
+            color: green;
+            font-weight: bold;
+        }
+        .card-cell.wrong {
+            color: red;
+            font-weight: bold;
+        }
+
+        .middle-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .tip-area {
+            color: #ff4444;
+            font-size: 14px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-btn {
+            padding: 8px 25px;
+            border: 1px solid #999;
+            background: #f0f0f0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .submit-btn {
+            padding: 8px 25px;
+            border: 1px solid #999;
+            background: #f0f0f0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .bottom-area {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 150px;
+        }
+        .image-area img {
+            max-height: 120px;
+            max-width: 80%;
+        }
+        .empty-tip {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .tip-box {
+            margin: 15px 20px 30px;
+            padding: 15px;
+            background: #fef6f6;
+            border: 1px solid #ffcccc;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .tip-title {
+            color: #ff4444;
+            font-weight: bold;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .modal-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .modal-btns {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 8px 25px;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-area">
+        <div class="info-panel">
+            <div class="info-header">韶关市模拟考场<br>第1考台</div>
+            <div class="avatar"></div>
+            <div class="info-list">
+                <p><label>姓名:</label><input type="text" value="余保路-李亿璇" readonly></p>
+                <p><label>性别:</label><input type="text" value="男" readonly></p>
+                <p><label>车型:</label><input type="text" value="小车" readonly></p>
+                <p><label>科目:</label><input type="text" value="科目一" readonly></p>
+            </div>
+            <div class="time-box">
+                <div class="time-title">剩余时间</div>
+                <div class="time-value" id="countdown">45:00</div>
+            </div>
+        </div>
+
+        <div class="question-panel">
+            <div class="question-header">考试题目</div>
+            <div class="question-content" id="questionText"></div>
+            <div class="tip-box" id="tipBox" style="display:none;">
+                <div class="tip-title">答题技巧</div>
+                <div id="tipContent"></div>
+            </div>
+            <div class="option-area">
+                <label>您选择的答案：</label>
+                <div class="option-btn-group" id="optionBtns">
+                    <!-- 动态渲染按钮 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card-panel">
+            <div class="card-header">答题信息</div>
+            <div class="card-table" id="cardTable"></div>
+        </div>
+    </div>
+
+    <div class="middle-area">
+        <div class="tip-area">
+            <span style="color:red;font-weight:bold;">操作提示：单选题/判断题</span><br>
+            请选择正确答案，选错即时提示
+        </div>
+        <div class="btn-group">
+            <button class="nav-btn" onclick="prevQuestion()">上一题</button>
+            <button class="nav-btn" onclick="nextQuestion()">下一题</button>
+            <button class="submit-btn" onclick="showSubmitModal()">交卷</button>
+        </div>
+    </div>
+
+    <div class="bottom-area">
+        <div class="image-area" id="imageArea">
+            <div class="empty-tip">无图片</div>
+        </div>
+    </div>
+
+    <div class="modal" id="submitModal">
+        <div class="modal-box">
+            <div class="modal-title">确定要交卷吗？</div>
+            <p>交卷后将无法修改答案，请确认。</p>
+            <div class="modal-btns">
+                <button class="modal-btn" onclick="hideSubmitModal()">继续考试</button>
+                <button class="modal-btn" onclick="submitExam()">确认交卷</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+const questions = [
+{type:"judge",num:1,question:"驾驶机动车在道路上违反道路交通安全法的行为属于违法行为。",options:["A.正确","B.错误"],answer:0,image:"",tip:"凡是违反法规的行为都是违法行为。"},
+{type:"judge",num:2,question:"机动车驾驶人造成重大交通事故后逃逸，构成犯罪的，终身不得重新申领机动车驾驶证。",options:["A.正确","B.错误"],answer:0,image:"",tip:"逃逸构成犯罪，终身禁驾。"},
+{type:"choice",num:3,question:"准驾车型为小型自动挡汽车的，可以驾驶以下哪种车型？",options:["A.小型汽车","B.二轮摩托车","C.低速载货汽车","D.轻型自动挡载货汽车"],answer:3,image:"",tip:"自动找自动。"},
+{type:"judge",num:4,question:"驾驶人在驾驶证丢失后仍驾驶机动车上路属于无证驾驶。",options:["A.正确","B.错误"],answer:0,image:"",tip:"证丢了没带都按无证处理。"},
+{type:"choice",num:5,question:"路口转弯车辆应让直行车辆先行，正确吗？",options:["A.正确","B.错误"],answer:0,image:"",tip:"转弯让直行。"}
+];
+
+let answerRecord = {};
+let current = 0;
+let timer;
+
+function buildCardTable() {
+    const table = document.getElementById('cardTable');
+    let html = '';
+    for (let i = 1; i <= 100; i++) {
+        html += `<div class="card-cell" data-num="${i}">${i}</div>`;
+    }
+    table.innerHTML = html;
+    document.querySelectorAll('.card-cell').forEach(cell => {
+        cell.onclick = () => {
+            const num = parseInt(cell.dataset.num);
+            const idx = questions.findIndex(q => q.num === num);
+            if (idx !== -1) {
+                current = idx;
+                loadQuestion();
+            }
+        };
+    });
+}
+
+function renderOptionButtons(q) {
+    const wrap = document.getElementById('optionBtns');
+    wrap.innerHTML = '';
+    let btns = [];
+    if(q.type === "judge"){
+        btns = [{text:"✔",idx:0},{text:"✘",idx:1}];
+    }else{
+        btns = [{text:"A",idx:0},{text:"B",idx:1},{text:"C",idx:2},{text:"D",idx:3}];
+    }
+    btns.forEach(item=>{
+        const btn = document.createElement('button');
+        btn.className = "option-btn";
+        btn.dataset.index = item.idx;
+        btn.innerText = item.text;
+        btn.onclick = function(){
+            selectAnswer(parseInt(this.dataset.index));
+        };
+        wrap.appendChild(btn);
+    });
+}
+
+function selectAnswer(idx){
+    const q = questions[current];
+    if (answerRecord[q.num]) return;
+
+    const isRight = idx === q.answer;
+    answerRecord[q.num] = { selected: idx, isRight: isRight };
+
+    const btns = document.querySelectorAll('.option-btn');
+    btns[idx].classList.add('selected');
+    btns.forEach(b => b.disabled = true);
+
+    if(isRight){
+        btns[idx].classList.add('correct');
+        // 答对：不显示技巧
+        document.getElementById('tipBox').style.display = "none";
+    }else{
+        btns[idx].classList.add('wrong');
+        btns[q.answer].classList.add('correct');
+        // 答错：显示技巧
+        document.getElementById('tipContent').innerText = q.tip;
+        document.getElementById('tipBox').style.display = "block";
+    }
+
+    const cell = document.querySelector(`.card-cell[data-num="${q.num}"]`);
+    const letter = q.type === "judge" ? (isRight ? "√" : "×") : ["A","B","C","D"][idx];
+    cell.innerText = letter;
+    cell.classList.add(isRight ? 'right' : 'wrong');
+}
+
+function loadQuestion() {
+    const q = questions[current];
+    const record = answerRecord[q.num];
+
+    let html = `${q.num}.【${q.type=="judge"?"判断题":"选择题"}】${q.question}<br>`;
+    q.options.forEach(opt=>{
+        html += opt + "<br>";
+    });
+    document.getElementById('questionText').innerHTML = html;
+
+    renderOptionButtons(q);
+    document.getElementById('tipBox').style.display = "none";
+
+    if (record) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns[record.selected].classList.add('selected');
+        btns.forEach(b => b.disabled = true);
+
+        if(record.isRight){
+            btns[record.selected].classList.add('correct');
+            document.getElementById('tipBox').style.display = "none";
+        }else{
+            btns[record.selected].classList.add('wrong');
+            btns[q.answer].classList.add('correct');
+            document.getElementById('tipContent').innerText = q.tip;
+            document.getElementById('tipBox').style.display = "block";
+        }
+    }
+
+    const imageArea = document.getElementById('imageArea');
+    if (q.image) {
+        imageArea.innerHTML = `<img src="${q.image}" alt="题目图片">`;
+    } else {
+        imageArea.innerHTML = `<div class="empty-tip">无图片</div>`;
+    }
+
+    document.querySelectorAll('.card-cell').forEach(cell => cell.classList.remove('current'));
+    document.querySelector(`.card-cell[data-num="${q.num}"]`).classList.add('current');
+}
+
+function prevQuestion() {
+    if (current > 0) {
+        current--;
+        loadQuestion();
+    }
+}
+
+function nextQuestion() {
+    if (current < questions.length - 1) {
+        current++;
+        loadQuestion();
+    } else {
+        alert("已到最后一题");
+    }
+}
+
+function startCountdown() {
+    let t = 45 * 60;
+    timer = setInterval(() => {
+        t--;
+        const m = Math.floor(t / 60);
+        const s = t % 60;
+        document.getElementById('countdown').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        if (t <= 0) {
+            clearInterval(timer);
+            alert("考试时间到，自动交卷");
+            submitExam();
+        }
+    }, 1000);
+}
+
+function saveErrorRecords(wrongQuestions,rightCount,answeredCount,carType,subject,usedTime) {
+    // 1. 保存错题记录（保持原有功能不变）
+    const errorRecords = JSON.parse(localStorage.getItem('errorRecords') || '[]');
+    errorRecords.unshift({
+        id: Date.now(),
+        time: new Date().toLocaleString(),
+        carType: carType,
+        subject: subject,
+        paper: "模拟全真考试",
+        total: 100,
+        right: rightCount,
+        wrong: wrongQuestions.length,
+        questions: wrongQuestions
+    });
+    localStorage.setItem('errorRecords', JSON.stringify(errorRecords));
+
+    // 2. 新增：保存成绩记录
+    const scoreRecords = JSON.parse(localStorage.getItem('scoreRecords') || '[]');
+    const score = rightCount;
+    // 自定义评语，和截图风格保持一致
+    let comment = "";
+    if(score === 0) {
+        comment = "(恭喜解锁“再来一次”)";
+    } else if(score < 20) {
+        comment = "(这次当预习，下次当复习)";
+    } else if(score < 60) {
+        comment = "(起点越低，逆袭越帅)";
+    } else if(score < 90) {
+        comment = "(别急，手感在路上了)";
+    } else if(score < 95) {
+        comment = "(稳了！再冲一把满分)";
+    } else {
+        comment = "(大神，这波直接封神！)";
+    }
+
+    scoreRecords.unshift({
+        id: Date.now(),
+        carType: carType, // 驾照类型
+        subject: subject, // 科目
+        usedTime: usedTime, // 答题用时
+        score: score, // 获得分数
+        comment: comment, // 分数评语
+        time: new Date().toLocaleString() // 模拟时间
+    });
+    localStorage.setItem('scoreRecords', JSON.stringify(scoreRecords));
+}
+
+function showSubmitModal() {
+    document.getElementById('submitModal').style.display = 'flex';
+}
+function hideSubmitModal() {
+    document.getElementById('submitModal').style.display = 'none';
+}
+function submitExam() {
+    clearInterval(timer);
+    hideSubmitModal();
+
+    let right = 0;
+    const answered = Object.keys(answerRecord).length;
+    let wrongQuestions = [];
+
+    for (const k in answerRecord) {
+        const q = questions.find(x => x.num === parseInt(k));
+        if (answerRecord[k].isRight) right++;
+        else if(q) wrongQuestions.push(q);
+    }
+
+    // 计算答题用时
+    const totalSeconds = 45 * 60;
+    const usedSeconds = totalSeconds - (document.getElementById('countdown').innerText.split(':').reduce((m,s)=>parseInt(m)*60+parseInt(s)));
+    const minutes = Math.floor(usedSeconds / 60);
+    const seconds = usedSeconds % 60;
+    const usedTimeStr = `${minutes}分${seconds}秒`;
+
+    // 读取车型和科目（从 localStorage 里拿）
+    const simConfig = JSON.parse(localStorage.getItem('simulationConfig') || '{}');
+    const carType = simConfig.carType || '小车';
+    const subject = simConfig.subject || '科目一';
+
+    // 调用保存函数，传入完整参数
+    saveErrorRecords(wrongQuestions, right, answered, carType, subject, usedTimeStr);
+
+    alert(`考试结束！\n已答：${answered} 题\n答对：${right} 题\n答错：${answered-right} 题\n得分：${right} 分`);
+    location.href = 'index.html';
+}
+
+window.onload = function() {
+    buildCardTable();
+    startCountdown();
+    loadQuestion();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,2887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科目一刷题系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .header {
+            height: 60px;
+            background: linear-gradient(90deg, #1abc9c 0%, #667eea 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 20px;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 20px;
+            font-size: 16px;
+        }
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+            background: white;
+        }
+        .sidebar {
+            width: 200px;
+            padding: 20px;
+            border-right: 1px solid #eee;
+        }
+        .box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .avatar {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .info p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .time-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .time-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .question-area {
+            flex: 1;
+        }
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .image-area {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-area img {
+            max-width: 400px;
+            max-height: 250px;
+        }
+        .answer-area {
+           height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 左右两端对齐 */
+            padding: 0 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        /* 左侧：答案文本 */
+        .answer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        /* 右侧：选项按钮 + 确认按钮 */
+        .answer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .option-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0 5px;
+        }
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+        .option-btn.selected {
+            background: #1abc9c;
+            color: white;
+            border-color: #1abc9c;
+        }
+        .option-btn.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .option-btn.wrong {
+            background: #F44336;
+            color: white;
+            border-color: #F44336;
+        }
+        .tip-box {
+            padding: 10px 12px;
+            background: #fef6f6;
+            border: 1px solid #ffcccc;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+            display: none;
+        }
+        .tip-title {
+            color: #ff4444;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        @keyframes flash {
+            0%, 100% { color: #e53935; background: transparent; }
+            50% { color: #e53935; background: #ffebee; }
+        }
+        .flash-keyword {
+            animation: flash 0.8s ease-in-out 3;
+            color: #e53935;
+            font-weight: bold;
+        }
+        .footer {
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .accuracy {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .footer-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .footer-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-read { background: #3498db; }
+        .btn-skill { background: #27ae60; }
+        .btn-video { background: #d35400; }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            color: #666;
+        }
+        .action-btns {
+            display: flex;
+            gap: 20px;
+        }
+        .action-btn {
+            padding: 10px 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            background: #f5f5f5;
+        }
+        .card {
+            width: 300px;
+            padding: 20px;
+            border-left: 1px solid #eee;
+        }
+        .card-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .card-table td, .card-table th {
+            border: 1px solid #ddd;
+            width: 10%;
+            height: 30px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .card-table th {
+            background: #667eea;
+            color: white;
+        }
+        .card-table td.current {
+            background: #667eea;
+            color: white;
+        }
+        .random-btn {
+            margin-top: 20px;
+            padding: 8px 15px;
+            background: #5577aa;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .modal-title {
+            color: red;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .modal-btns {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel { background: #eee; color: #333; }
+        .btn-confirm { background: #3498db; color: white; }
+        .multi-confirm {
+            padding: 8px 20px;
+            background: #ff5722;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+            margin-left: 10px;
+        }
+        /* ========== 新增：结束确认弹窗样式 ========== */
+        .end-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .end-confirm-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+        .end-confirm-title {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .end-confirm-tip {
+            line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .end-confirm-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .end-btn-cancel {
+            padding: 8px 20px;
+            background: #eee;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .end-btn-confirm {
+            padding: 8px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* ========== 新增：考试结果弹窗样式 ========== */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        .result-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+        .result-title {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .result-score {
+            font-size: 18px;
+            color: blue;
+            margin-bottom: 15px;
+        }
+        .result-tip {
+            font-size: 18px;
+            color: red;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .result-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .result-btn-wrong {
+            padding: 8px 20px;
+            background: #eee;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .result-btn-back {
+            padding: 8px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="history.back()">&lt; 返回</button>
+        <span>星升路吴延祝您早日拿证，加盟电话16671551344</span>
+        <div class="header-right">
+            <span>SGYC202613</span>
+            <button class="logout-btn" onclick="logout()">⏻</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="box">
+                <p style="color: #66aaff;">星升路交规</p>
+                <p style="margin-top:10px;">第001考台</p>
+            </div>
+            <div class="avatar">
+                <img src="https://img.icons8.com/fluency/96/000000/user-male-circle.png" width="60">
+            </div>
+            <div class="info">
+                <p style="color: #66aaff;">考生信息</p>
+                <p>考生姓名: 李晓明</p>
+                <p>考试车型: 小车</p>
+                <p>科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;目: 科目一</p>
+                <p>申请原因: 科目一必考一</p>
+            </div>
+            <div class="time-box">
+                <p style="color: #66aaff;">剩余时间</p>
+                <div class="time-text" id="countdown">45:00</div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="question-area">
+                <div class="questionText" id="questionText"></div>
+                <div class="image-area" id="imageArea"></div>
+            </div>
+            <div class="answer-area">
+                <!-- 左侧：答案文字区域 -->
+                <div class="answer-left">
+                    <span>您选择的答案:</span>
+                    <span id="userAnswer">未选择</span>
+                </div>
+                <!-- 右侧：选项按钮 + 确认按钮区域 -->
+                <div class="answer-right">
+                    <div id="optionBtns"></div>
+                    <button class="multi-confirm" id="multiConfirmBtn" onclick="confirmMultiAnswer()">确认答案</button>
+                </div>
+            </div>
+            <div class="tip-box" id="tipBox">
+                <div class="tip-title">答题技巧</div>
+                <div id="tipContent"></div>
+            </div>
+            <div class="footer">
+                <div class="accuracy">正确率: <span id="accuracy">0.00%</span></div>
+                <div class="footer-btns">
+                    <button class="footer-btn btn-read">读题</button>
+                    <button class="footer-btn btn-skill">答题技巧</button>
+                    <button class="footer-btn btn-video">视频教程</button>
+                    <span>☆ 收藏本题</span>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="memorizeMode"> 背题模式</label>
+                    <label><input type="checkbox" id="showAnswerMode"> 显示正确答案</label>
+                    <label><input type="checkbox" id="autoNext"> 答对自动下一题</label>
+                </div>
+                <div class="action-btns">
+                    <button class="action-btn" onclick="prevQuestion()">上一题</button>
+                    <button class="action-btn" onclick="nextQuestion()">下一题</button>
+                    <button class="action-btn" onclick="showEndConfirm()">结束</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <table class="card-table" id="cardTable"></table>
+            <button class="random-btn" onclick="shuffleQuestions()">随机模式</button>
+        </div>
+    </div>
+
+    <div class="modal" id="startModal">
+        <div class="modal-box">
+            <div class="modal-title">考试开始</div>
+            <p>倒计时准备，请点击确认开始</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="location.href='index.html'">取消</button>
+                <button class="modal-btn btn-confirm" onclick="startExam()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 新增：结束确认弹窗 ========== -->
+    <div class="end-confirm-modal" id="endConfirmModal">
+        <div class="end-confirm-box">
+            <div class="end-confirm-title">考试确认窗口</div>
+            <div class="end-confirm-tip">
+                操作提示:<br>
+                1：点击【结束功能】，<br>将提交考试成绩，结束考试！<br>
+                2：点击【继续考试】，<br>将关闭本窗口，继续考试！
+            </div>
+            <div class="end-confirm-btns">
+                <button class="end-btn-cancel" onclick="closeEndConfirm()">继续考试</button>
+                <button class="end-btn-confirm" onclick="confirmEndExam()">确认交卷</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 新增：考试结果弹窗 ========== -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-box">
+            <div class="result-title">考试结果查看</div>
+            <div class="result-score">本场考试得分: <span id="finalScore">0</span></div>
+            <div class="result-tip" id="resultTipText">恭喜解锁“再来一次”！</div>
+            <div class="result-btns">
+                <button class="result-btn-wrong" onclick="viewWrongQuestions()">错题查看</button>
+                <button class="result-btn-back" onclick="backToIndex()">返回题库</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+const originalData = {
+    "data": [
+        {
+            "id": 1569,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-001.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "高速路上，机动车因故障暂时不能离开应急车道或路肩时，驾乘人员要下车在路边等候，但【不得离开】高速公路。",
+                "number": "K4BK-4-001",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "机动车出了故障，车上人员要转移到护栏外安全地带。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1569_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1569_2.mp3",
+                "answer": "错",
+                "skill_txt": "在考试题目中，“不下车、不脱衣服、【不离开高速】”都是错的。题中说“不得离开高速”错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1271,
+            "pk": 6,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z4.J048.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-003.mp4?323",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "如图所示，在这种情况下【可】以借用快速车道超车。",
+                "number": "K4BK-1-003",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "虚线可以越线或压线行驶，可以从前车左侧借用快速车道超车。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1271_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1271_2.mp3",
+                "answer": "对",
+                "skill_txt": "看图：虚线【可】，正确【√】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1301,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z3.J003.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-033.mp4?738",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "路口内【中心圈】标示左小转弯要沿内侧行驶。",
+                "number": "K4BK-1-033",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "路口内沿中心圈内侧左转弯行驶。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1301_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1301_2.mp3",
+                "answer": "对",
+                "skill_txt": "图中有中心圈，题中说【中心圈】图文一致，正确【√】。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1669,
+            "pk": 11,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-001.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "救火时【不】要【脱】去所穿的化纤服装，以免伤害暴露的皮肤。",
+                "number": "K4BK-5-001",
+                "c_a": "对",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "化纤材质更易着火，粘附力更强，会对人体造成更大伤害。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1669_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1669_2.mp3",
+                "answer": "错",
+                "skill_txt": "在题目中，“不下车、【不脱衣服】、不离开高速公路”，都是错的【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1683,
+            "pk": 11,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "伤员骨折处出血时，【先固定】好肢体再进行止血和包扎。",
+                "number": "K4BK-5-015",
+                "c_a": "对",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "出血时，应该先止血后固定包扎。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1683_1.mp3?20260122233104",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1683_2.mp3?20260122233104",
+                "answer": "错",
+                "skill_txt": "先固定，错误【×】应该先止血",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1603,
+            "pk": 9,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-035.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "机动车在高速公路上发生故障或者交通事故，无法正常行驶的，可由【同行机动车拖】曳、牵引。",
+                "number": "K4BK-4-035",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "机动车发生故障后，驾驶人应当迅速将机动车移至右侧路肩或者应急道内自行修理；不能移动的，应当迅速报警；事故车辆由救援车、清障车拖曳、牵引。\r\n",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1603_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1603_2.mp3",
+                "answer": "错",
+                "skill_txt": "同行车拖，错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1589,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-021.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "车速较高，前方发生紧急情况时，要【先转方向】避让，再采取制动减速，以减小碰撞损坏程度。",
+                "number": "K4BK-4-021",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "车速较高，不制动减速就转动转向盘，容易造成车辆倾翻。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1589_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1589_2.mp3",
+                "answer": "错",
+                "skill_txt": "发生紧急情况时，应先减速，题中说“先转方向，再减速”，错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1290,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z2.J028.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-022.mp4?978",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "道路右侧白色实线标示机动车道与【人行道】的分界线。",
+                "number": "K4BK-1-022",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中白色实线表示机动车与非机动车道的分界线。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1290_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1290_2.mp3",
+                "answer": "错",
+                "skill_txt": "题中说“人”，图中无人，图文不一致，错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1292,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z2.J032.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-024.mp4?710",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "如下图，左转弯车辆可【直接】进入左转弯待转区，等待放行信号。",
+                "number": "K4BK-1-024",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "直行箭头灯为绿灯时，才可以进入左转弯待转区。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1292_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1292_2.mp3",
+                "answer": "错",
+                "skill_txt": "图中直行为红灯不能走，题中说可直接进入左转弯待转区，图文不一致错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1391,
+            "pk": 8,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z3.J001.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-2-023.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "前方路口减速让行线表示要【停车让】干道车先行。",
+                "number": "K4BK-2-023",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中标志为减速让行。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1391_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1391_2.mp3",
+                "answer": "错",
+                "skill_txt": "图中标志表示减速让行，题中说停车让行，图文不一致，错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1605,
+            "pk": 9,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-037.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车遇浓雾或沙尘暴时，行驶速度【不要过慢】，避免后方来车追尾。",
+                "number": "K4BK-4-037",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "驾驶机动车遇浓雾或沙尘暴时，必须打开前后雾灯和危险报警闪光灯，减速慢行直至靠边停车以保证安全。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1605_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1605_2.mp3",
+                "answer": "错",
+                "skill_txt": "（不要过慢）就是要快的意思，错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1480,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/image\/2026\/2\/1770129821854_n2l517yl0.png",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-012.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "右侧这个【标志】警告进入隧道减速慢行。",
+                "number": "K4BK-3-012",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中标志表示隧道开灯。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1480_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1480_2.mp3",
+                "answer": "错",
+                "skill_txt": "标准答案：【×】。图中【标志】表示隧道【开灯】，【题中】说“【减速慢行】”图文不一致，【×】。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1483,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z3.J035.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-015.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "右侧标志表示不允许【长时】鸣喇叭。",
+                "number": "K4BK-3-015",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中标志表示禁止鸣喇叭。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1483_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1483_2.mp3",
+                "answer": "错",
+                "skill_txt": "图中标志表示禁止鸣喇叭，题中说“不允许长时间鸣喇叭”，图文不一致 错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1490,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/image\/2026\/2\/1770130566733_97710e909.png",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "前方标志表示除【货车】以外的其他车辆不准进入右侧车道行驶。",
+                "number": "K4BK-3-022",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中标志表示快速公交专用车道。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1490_1.mp3?20260203225702",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1490_2.mp3?20260203225702",
+                "answer": "错",
+                "skill_txt": "在考试题目中出现【货车】、小型车 都错；出现公交车，对，此题【货车】，错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1491,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/image\/2026\/2\/1770130755548_o7hrns8di.png",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-023.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "前方标志告知前方道路【各行其道】的信息。",
+                "number": "K4BK-3-023",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中标志表示方向地点信息。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1491_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1491_2.mp3",
+                "answer": "错",
+                "skill_txt": "图中标志表示【十字路口】，题中说【各行其道】图文不一致，错误【×】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1493,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z3.J049.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-025.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "右前方标志指示前方路口左转弯【绕行】的路线。",
+                "number": "K4BK-3-025",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中右侧标志表示左转弯绕行。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1493_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1493_2.mp3",
+                "answer": "对",
+                "skill_txt": "图中右前方标志表示绕行，图文一致，正确【√】。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 5529,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z4.J004.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "左侧【标志】警示前方道路右侧【不能】通行。",
+                "number": "K4XZ-1-025",
+                "c_a": "对",
+                "c_b": "错",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": null,
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/5529_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/5529_2.mp3",
+                "answer": "错",
+                "skill_txt": "标准答案：【×】。图中【栏杆】已经【抬起】，【可以通行】，【题中】说“【不能通行】”，图文不一致。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1372,
+            "pk": 8,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-2-004.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "同方向有【三条】机动车道的路段，【校车】在右侧车道停靠上、下学生时，校车停靠车道后方和相邻机动车道上的机动车应停车等待。",
+                "number": "K4BK-2-004",
+                "c_a": "正确",
+                "c_b": "错误",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "驾驶机动车遇到校车在道路右侧停车上下学生，同向有三条机动车道的，可以从第三条机动车道通过，一条，二条机动车道的都必须停车等待。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1372_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1372_2.mp3",
+                "answer": "对",
+                "skill_txt": "三条在校车的前面是对的，在校车的后面错，此题正确【√】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 5528,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 1,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车在高速公路上行驶，能见度小于50米时，只要车速不超过20公里\/小时，【可以不】驶离高速公路。",
+                "number": "K4XZ-1-024",
+                "c_a": "对",
+                "c_b": "错",
+                "c_c": "",
+                "c_d": "",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": null,
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/5528_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/5528_2.mp3",
+                "answer": "错",
+                "skill_txt": "标准答案：【×】。在考试题目中，出现“【可以不、可不】”的，【×】，【题中】“【可以不】驶离高速公路”。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 1,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1726,
+            "pk": 12,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-058.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "徐某驾驶一辆【中型客车】（乘载27人）行至四都镇前岭村壶南头路段，在上坡过程中，机动车发生后溜驶出路外坠入落差约80米的山崖，造成11人死亡、7人受伤。徐某的主要违法行为是什么？",
+                "number": "K4BK-5-058",
+                "c_a": "超速行驶",
+                "c_b": "客车【超员】",
+                "c_c": "酒后驾驶",
+                "c_d": "疲劳驾驶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "中型客车最多核载19人。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1726_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1726_2.mp3",
+                "answer": "B",
+                "skill_txt": "中型客车最多只能乘载【19人】题中说“乘载【27人】，答案为“客车【超员】。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1512,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/image\/20250622\/4ea812b5ef90d093d850c1d2d360b125.png",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-044.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车在这个路口怎样【右转弯】行驶？",
+                "number": "K4BK-3-044",
+                "c_a": "沿直行车道右转弯",
+                "c_b": "沿【右】侧道路【右】转弯",
+                "c_c": "停止线前停车等待",
+                "c_d": "借非机动车道右转",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "红色圆形信号灯亮时，车辆在不影响通行的情况下可以右转弯，但转弯时应该沿右侧道路右转弯。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1512_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1512_2.mp3",
+                "answer": "B",
+                "skill_txt": "【右转】找两个【右】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1308,
+            "pk": 6,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z2.J051.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-040.mp4?141",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车怎样【安全通过】铁路道口？",
+                "number": "K4BK-1-040",
+                "c_a": "进入道口前【减速】减挡",
+                "c_b": "换空挡利用惯性通过",
+                "c_c": "进入道口后换低速挡",
+                "c_d": "道口内停车左右观察",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中是铁路道口，所以要做到“一停，二看，三通过”以确保安全。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1308_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1308_2.mp3",
+                "answer": "A",
+                "skill_txt": "题中问安全通过，答案找【减速】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1633,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-065.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "车辆在泥泞路上发生【侧滑】时，以下做法正确的是?",
+                "number": "K4BK-4-065",
+                "c_a": "迅速制动减速",
+                "c_b": "向侧滑的另一侧转动转向盘适量修正",
+                "c_c": "迅速制动停车",
+                "c_d": "向【侧滑的一侧】转动转向盘适量修正",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "前轮侧滑时，向侧滑的相反方向转动转向盘修正方向；后轮侧滑时，向侧滑的相同方向转动转向盘修正方向。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1633_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1633_2.mp3",
+                "answer": "D",
+                "skill_txt": "【侧滑】找【侧滑的一侧】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1520,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/image\/20250621\/6a9aa50d073c02b9bd5e13202f6b2a95.png",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-052.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "右侧标志提示哪种车型不能通行？",
+                "number": "K4BK-3-052",
+                "c_a": "大型客车",
+                "c_b": "大型货车",
+                "c_c": "小型客货车",
+                "c_d": "各种【机动车】",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "图中标志表示禁止机动车通行。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1520_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1520_2.mp3",
+                "answer": "D",
+                "skill_txt": "在考试题目中，标志中【车灯】正对我们的表示【机动车】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1523,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z2.S066.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-055.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "看到这种手势信号时怎样行驶？",
+                "number": "K4BK-3-055",
+                "c_a": "直行通过路口",
+                "c_b": "在路口向右转弯",
+                "c_c": "【停车等待】",
+                "c_d": "在路口向左转弯",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "此手势指示右方车道的车辆可以左转弯，本车道车辆应停车等待。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1523_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1523_2.mp3",
+                "answer": "C",
+                "skill_txt": "在警察手势题中，答案中【有停车等待，选停车等待】，没有停车等待选【转弯】结尾的答案。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1535,
+            "pk": 9,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-067.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "在冰雪路面制动时，发现车辆【偏离方向】，以下做法正确的是?",
+                "number": "K4BK-3-067",
+                "c_a": "连续轻踩轻放刹车",
+                "c_b": "【停止踩】刹车",
+                "c_c": "以上做法都不对",
+                "c_d": "用力踩刹车",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "冰雪和湿滑路面制动,会使车辆方向失控或发生侧滑，导致交通事故发生。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1535_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1535_2.mp3",
+                "answer": "B",
+                "skill_txt": "题中问【偏离方向】，答案找【停止踩】刹车",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1526,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/image\/20250621\/efed724f5a3e5be7575397db3007609a.png",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-058.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车在山区道路遇到这种情况怎样行驶？",
+                "number": "K4BK-3-058",
+                "c_a": "【注意观察，尽快通过】",
+                "c_b": "停车瞭望，缓慢通过",
+                "c_c": "靠路左侧，加速绕行",
+                "c_d": "勤鸣喇叭，低速通过",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "经过落石多发的山区道路应注意观察，尽快通过。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1526_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1526_2.mp3",
+                "answer": "A",
+                "skill_txt": "【黄色】标志表示【注意】，在答案中【找“注意”】，正确答案为“【注意】观察，尽快通过”。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1528,
+            "pk": 7,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-060.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "【上坡】路段停车怎样使用行车制动？",
+                "number": "K4BK-3-060",
+                "c_a": "和平路时一样",
+                "c_b": "比在平路时【推】迟",
+                "c_c": "要重踏制动踏板",
+                "c_d": "比在平路时提前",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "上坡推迟制动；下坡提前制动。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1528_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1528_2.mp3",
+                "answer": "B",
+                "skill_txt": "【上坡】路骑车，骑不动，就要下车【推】着走，正确答案“【比在平路时推迟】”。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1610,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-042.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "在普通道路驾车遇暴雨，刮水器【无法】改善驾驶人视线，此时要采取的措施是：",
+                "number": "K4BK-4-042",
+                "c_a": "减速行驶",
+                "c_b": "集中注意力谨慎驾驶",
+                "c_c": "立即减速靠边【停驶】",
+                "c_d": "以正常速度行驶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "刮水器无法刮净雨水，驾驶人视线严重受阻，无法观察前方道路情况，应及时靠边停车，避免事故发生。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1610_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1610_2.mp3",
+                "answer": "C",
+                "skill_txt": "在考题答案中，有“减速靠右、【减速停车】、减速让行”的，都是【√】的，正确答案为“【立即减速靠边停驶】”。或者题目出现“【无法】”，答案选“【停】”。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1338,
+            "pk": 9,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-070.mp4?611",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车在冰雪路面行车注意什么？",
+                "number": "K4BK-1-070",
+                "c_a": "制动距离变短",
+                "c_b": "路面附着力变大",
+                "c_c": "制动距离延【长】",
+                "c_d": "抗滑能力变大",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "雨天、冰雪路湿滑路面，车轮的抓地力会变小，制动距离延长。\r\n",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1338_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1338_2.mp3",
+                "answer": "C",
+                "skill_txt": "答案有两个大选【长】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1615,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-047.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "在同向3车道高速公路上行车，车速高于每小时90公里、低于【每小时110公里】的机动车【不】应在哪条车道上行驶？",
+                "number": "K4BK-4-047",
+                "c_a": "最【左】侧",
+                "c_b": "任意",
+                "c_c": "中间",
+                "c_d": "最右侧",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "高速公路同方向有三条车道时，右侧车道车速范围60-90公里\/小时，中间车道车速范围90-110公里\/小时，左侧车道车速范围110-120公里\/小时。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1615_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1615_2.mp3",
+                "answer": "A",
+                "skill_txt": "在考试题目中，出现【110公里】的选择【最左侧】，出现80公里的选最右侧。【题中】为“【110公里】”，确答案为“最【左侧】”。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1629,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-061.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "下坡路制动突然失效后，【不可采用】的办法是什么？",
+                "number": "K4BK-4-061",
+                "c_a": "拉紧驻车制动器操纵杆或越【二级】挡位减挡",
+                "c_b": "利用道路边专设的避险车道停车",
+                "c_c": "用车身靠向路旁的岩石或树林碰擦",
+                "c_d": "将机动车向上坡道方向行驶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "制动失效，紧急制动或越二级减挡，易造成车辆倾翻。为了控制机动车车速，应迅速逐级或越一级减挡，利用发动机牵制作用降低车速。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1629_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1629_2.mp3",
+                "answer": "A",
+                "skill_txt": "【制动】突然【失效】后，只能逐级或越一级减挡，不能越【二级】减挡，正确答案为“拉紧驻车制动器操纵杆或越二级挡位减挡”。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1700,
+            "pk": 11,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-032.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "怎样正确使用灭火器【灭火】？",
+                "number": "K4BK-5-032",
+                "c_a": "人要站在下风处",
+                "c_b": "尽量接近火源",
+                "c_c": "灭火器瞄准火苗",
+                "c_d": "灭火器瞄准【火源】",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "灭火器使用方法：瞄准火源，站在上风，进行灭火。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1700_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1700_2.mp3",
+                "answer": "D",
+                "skill_txt": "【灭火器】灭火要对着【火源】，正确答案为“【灭火器瞄准火源】”。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1712,
+            "pk": 11,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-044.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "下列属于危险易燃【固体】的是什么？",
+                "number": "K4BK-5-044",
+                "c_a": "炸药",
+                "c_b": "火药",
+                "c_c": "电石",
+                "c_d": "【火柴】",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "火柴属于易燃固体；火药、电石、炸药属于易燃易爆固体。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1712_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1712_2.mp3",
+                "answer": "D",
+                "skill_txt": "固体找【火柴】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1333,
+            "pk": 8,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-065.mp4?345",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "怎样调整汽车座椅安全【头枕】的高度？",
+                "number": "K4BK-1-065",
+                "c_a": "调整到头枕中心与颈部平齐",
+                "c_b": "调整到头枕中心能支撑【头部】",
+                "c_c": "调整到头枕中心对正颈部",
+                "c_d": "调整到头枕中心高出头顶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "安全头枕是保护颈部不受伤害，调整到能支撑头部才能保护颈部。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1333_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1333_2.mp3",
+                "answer": "B",
+                "skill_txt": "【头枕】找【头部】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1407,
+            "pk": 8,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-2-039.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车遇到沙尘、冰雹、雾、雨、雪等【低能见度】条件时，应该怎样做？",
+                "number": "K4BK-2-039",
+                "c_a": "适当提高车速，尽快到达目的地，结束行车",
+                "c_b": "高频率鸣喇叭使其他交通参与者知道自己的位置",
+                "c_c": "同向跟车较近时，应使用远光灯",
+                "c_d": "【开启前照灯、示廓灯和后位灯】",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "特殊天气，要减速慢行，在开启前照灯，示廓灯和后位灯的同时还要开启危险报警闪光灯。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1407_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1407_2.mp3",
+                "answer": "D",
+                "skill_txt": "驾驶机动车遇特殊天气，【能见度低】时应【开灯】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1417,
+            "pk": 8,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-2-049.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶车辆驶入高速公路加速车道【后】，遇行车道车辆稀少时，以下做法正确的是什么？",
+                "number": "K4BK-2-049",
+                "c_a": "加速直接驶入行车道",
+                "c_b": "停车等待正常行驶车辆通过",
+                "c_c": "从正常行驶车辆【后】驶入行车道",
+                "c_d": "从正常行驶车辆前驶入行车道",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "加速车道指的是供车辆驶入高速车流之前加速用的车道，从正常行驶车辆后驶入行车道。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1417_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1417_2.mp3",
+                "answer": "C",
+                "skill_txt": "题中有【后】答案找【后】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1311,
+            "pk": 6,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z6.S032.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-1-043.mp4?752",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车在向左变更车道前，通过左后视镜看到图中情形时，以下做法正确的是什么？",
+                "number": "K4BK-1-043",
+                "c_a": "开启左转向灯，让【后方车】辆通过后变更车道",
+                "c_b": "在确认左侧无其他车辆后，变更车道",
+                "c_c": "开启左转向灯后直接变更车道",
+                "c_d": "开启左转向灯稍向左行驶，后方让行后再变更车道",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "变道不能影响正常行驶的车辆。后视镜有车，必须等左侧车通过后变道。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1311_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1311_2.mp3",
+                "answer": "A",
+                "skill_txt": "图中后视镜内有车，答案选让【后方车】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1634,
+            "pk": 9,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 2,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z6.S045.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-066.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "如图所示，驾驶机动车在暴雨天气条件下行驶，当刮水器【无法】刮净雨水影响行车安全时，以下做法正确的是什么？",
+                "number": "K4BK-4-066",
+                "c_a": "以正常速度行驶",
+                "c_b": "减速行驶",
+                "c_c": "注意观察，减速靠边【停车】",
+                "c_d": "集中注意力谨慎驾驶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "刮水器无法刮净雨水时，视线受阻，不具备行车条件，应立即减速靠边停车。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1634_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1634_2.mp3",
+                "answer": "C",
+                "skill_txt": "题目里面出现“【无法】”，就要【停车】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 2,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1651,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "【引起】车轮【爆胎】的情形，以下说法正确的是（）。",
+                "number": "K4BK-4-083",
+                "c_a": "磨损严重",
+                "c_b": "胎压过高",
+                "c_c": "尖锐物体刺伤",
+                "c_d": "车辆超载超员",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "轮胎磨损严重、轮胎气压过高、尖锐物体刺伤轮胎、车辆超载超员，都可能引起轮胎爆裂。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1651_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1651_2.mp3",
+                "answer": "A;B;C;D",
+                "skill_txt": "【引起爆胎】，答案全选。",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1748,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-080.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "机动车发生侧滑时要如何调整方向？",
+                "number": "K4BK-5-080",
+                "c_a": "前轮侧滑，向侧滑相反方向转动转向盘",
+                "c_b": "后轮侧滑，向侧滑方向转动转向盘",
+                "c_c": "前轮侧滑，向侧滑方向转动转向盘",
+                "c_d": "后轮侧滑，向侧滑相反方向转动转向盘",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "前轮侧滑时，向侧滑的相反方向转动转向盘修正方向；后轮侧滑时，向侧滑的相同方向转动转向盘修正方向。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1748_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1748_2.mp3",
+                "answer": "A;B",
+                "skill_txt": "【前】轮选【长】，【后】轮选【短】，所以【前长后短】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1567,
+            "pk": 8,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "雨天驾车时，【不能急踩刹车】是因为（）。",
+                "number": "K4BK-3-099",
+                "c_a": "易产生侧滑",
+                "c_b": "易发生失控",
+                "c_c": "易【加剧】轮胎磨损",
+                "c_d": "易导致后车追尾",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "雨天路面会变湿滑，急踏制动踏板，车辆易出现侧滑现象或导致后车追尾。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1567_1.mp3?20260301225601",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1567_2.mp3?20260301225602",
+                "answer": "A;B;D",
+                "skill_txt": "题中问【不能踩急刹车】，答案不选【加剧】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1563,
+            "pk": 8,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "http:\/\/video.ikaos.com.cn\/\/uploads\/new\/K4Z5.M096.JPG",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-3-095.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "如图所示，当您看到这个标志时，应该想到什么？",
+                "number": "K4BK-3-095",
+                "c_a": "视野范围内【无行人】可以适当加速通过",
+                "c_b": "视野范围内【无行人】可以保持原速行驶",
+                "c_c": "前方有人行横道",
+                "c_d": "应当相应减速行驶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "应想到前方有人行横道，可能会有行人通过人行横道，应减速慢行，必要时，停车让行。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1563_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1563_2.mp3",
+                "answer": "C;D",
+                "skill_txt": "图中标志上有行人，答案中“【无行人】”不选，选其它2个",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1760,
+            "pk": 12,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-092.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "【杨】某驾驶改装【小】型客车（核载9人，实载64人，其中62人为幼儿园学生），行至榆林子镇马槽沟村处，占用对向车道逆行时与一辆重型自卸货车正面碰撞，造成22人死亡、44人受伤。该起事故中的主要违法行为是什么？",
+                "number": "K4BK-5-092",
+                "c_a": "客车逆向行驶",
+                "c_b": "非法改装机动车",
+                "c_c": "客车超员",
+                "c_d": "货车【超速】行驶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "1、非法改装机动车2、乘载人数不能超过核载人数。3、占道逆行。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1760_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1760_2.mp3",
+                "answer": "A;B;C",
+                "skill_txt": "【杨 小】（胆子小），不敢超速，答案不选【超速】，选其它三个",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1766,
+            "pk": 12,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-098.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "【贾】某驾车在高速公路上行驶，遇到大雾，能见度小于50米，贾某开启雾灯、示廓灯、危险报警闪光灯，以时速40公里行驶，并与同车道前车保持50米距离，经过三个出口驶离高速公路，贾某的主要违法行为是什么?",
+                "number": "K4BK-5-098",
+                "c_a": "与同车道【前】车距离不足",
+                "c_b": "未及时从最近的出口驶离高速公路",
+                "c_c": "未按规定开启相应的灯光",
+                "c_d": "超速行驶",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "高速公路能见度小于50米时，应开启雾灯、近光灯、示廓灯、前后位灯和危险警报灯，车速不得超过每小时20公里，并从最近的出口尽快驶离高速公路。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1766_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1766_2.mp3",
+                "answer": "B;C;D",
+                "skill_txt": "【贾】假钱【前】不选，答案不选【前】，选其它三个",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1745,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-5-077.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "下坡路行驶，【制动】突然【失效】后，可采用的减速【方法】是什么？",
+                "number": "K4BK-5-077",
+                "c_a": "抢挂低速挡",
+                "c_b": "用车身靠向路旁的岩石或树木碰擦",
+                "c_c": "利用道路边专设避险车道减速停车",
+                "c_d": "【首先拉紧】驻车制动",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "下坡路行驶，制动突然失效后，应抢挂低速挡，利用路边专设避险车道减速停车或用车身靠向路旁的岩石或树木碰擦，待车速降低到合适范围或停止后，再拉紧驻车制动。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1745_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1745_2.mp3",
+                "answer": "A;B;C",
+                "skill_txt": "制动【失效、失灵】【不选首先】，其余全选，此题【答案有“首先”】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1666,
+            "pk": 9,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-098.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "大风天气行车需要【注意】什么?",
+                "number": "K4BK-4-098",
+                "c_a": "尽量【减少超车】",
+                "c_b": "关紧车窗",
+                "c_c": "尽量避免制动",
+                "c_d": "注意车辆的横向移动",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "大风天气车辆易横向移动，行车时应关紧车窗，尽量避免制动，不得超车。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1666_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1666_2.mp3",
+                "answer": "B;C;D",
+                "skill_txt": "大风沙尘天气不能超车，答案不选【超车】，选其它三个",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1659,
+            "pk": 9,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-091.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶机动车在山区道路【下坡路段】尽量避免超车，以下说法正确的是什么？",
+                "number": "K4BK-4-091",
+                "c_a": "下坡路段由于【重力】作用，车辆比平路时操控困难",
+                "c_b": "下坡路段车辆阻力很大",
+                "c_c": "下坡路段前车车速较快，难以超越",
+                "c_d": "下坡路段车辆由于【重力】作用，车速容易过快",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "1、下坡路段车辆由于重力作用，车速容易过快；2、下坡路段由于重力作用，车辆比平路时操控困难。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1659_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1659_2.mp3",
+                "answer": "A;D",
+                "skill_txt": "4个【下坡】选两个【重力】作用",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        },
+        {
+            "id": 1652,
+            "pk": 10,
+            "veh": "C1\/C2\/C3\/C5",
+            "course": "4",
+            "type": 3,
+            "img": "",
+            "content_voice": "",
+            "skill_img": "",
+            "skill_gif": "",
+            "skill_voice": "",
+            "skill_video": "http:\/\/video.ikaos.com.cn\/K4BK-4-084.mp4",
+            "region": "all",
+            "collect": "0",
+            "fields": {
+                "content_voice": "",
+                "content": "驾驶员在高速公路上行驶时，车辆左前轮突然【爆胎】，须第一时间紧握转向盘，然后轻踏制动踏板进行【减速】，并将车停靠在紧急停车带上。这样做的原因是什么？",
+                "number": "K4BK-4-084",
+                "c_a": "轻踏制动踏板进行【减速】是为了保护轮胎",
+                "c_b": "爆胎后，紧急制动容易引起侧翻",
+                "c_c": "爆胎后，车辆自身开始【减速】，所以只需轻踏制动踏板",
+                "c_d": "爆胎后，车辆行驶方向易发生改变，须紧握转向盘",
+                "c_e": "",
+                "c_f": "",
+                "c_g": "",
+                "c_h": "",
+                "solution": "高速公路车速较快，轮胎爆裂，方向会发生偏移，应紧握转向盘；若紧急制动，易造成车辆侧翻。",
+                "audio": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1652_1.mp3",
+                "audio_skill": "http:\/\/video.ikaos.com.cn\/uploads\/test\/1652_2.mp3",
+                "answer": "B;D",
+                "skill_txt": "答案中【三个爆胎】，不选【减速】",
+                "veh": "C1\/C2\/C3\/C5",
+                "type": 3,
+                "course": "4"
+            },
+            "num": 50
+        }
+    ]
+};
+
+let globalMemorizeMode = false;
+let globalShowAnswer = false;
+let questions = [];
+
+function clearBracket(str){
+    return str.replace(/【|】/g,"");
+}
+function addKeywordFlash(str){
+    return str.replace(/【([^】]+)】/g,'<span class="flash-keyword">$1</span>');
+}
+
+function initQuestions() {
+    questions = originalData.data.map((item, index) => {
+        const f = item.fields;
+        const typeMap = { 1: 'judge', 2: 'choice', 3: 'multiple' };
+        const type = typeMap[item.type];
+        const options = [f.c_a, f.c_b, f.c_c, f.c_d].filter(i => i);
+        let answer = null;
+        if (type === 'judge') answer = f.answer === '对' ? 0 : 1;
+        else if (type === 'choice') answer = f.answer.charCodeAt(0) - 65;
+        else if (type === 'multiple') answer = f.answer.split(';').map(c => c.charCodeAt(0) - 65);
+        return {
+            idx: index + 1,
+            type,
+            question: f.content,
+            options,
+            answer,
+            image: item.img,
+            tip: f.skill_txt || f.solution,
+            raw: item
+        };
+    });
+    // 新增：初始化渲染答题卡
+    renderCardTable();
+}
+
+// 动态生成答题卡表格
+function renderCardTable() {
+    const table = document.getElementById('cardTable');
+    table.innerHTML = '';
+    const total = questions.length;
+    const colNum = 10; // 每行10题
+
+    // 表头行
+    let headTr = document.createElement('tr');
+    let headTh = document.createElement('th');
+    headTh.innerText = '题';
+    headTr.appendChild(headTh);
+    for (let c = 1; c <= colNum; c++) {
+        let th = document.createElement('th');
+        th.innerText = c;
+        headTr.appendChild(th);
+    }
+    table.appendChild(headTr);
+
+    // 题目行
+    let rowIndex = 1;
+    for (let i = 0; i < total; i += colNum) {
+        let tr = document.createElement('tr');
+        // 左侧行号
+        let rowTh = document.createElement('th');
+        rowTh.innerText = rowIndex;
+        tr.appendChild(rowTh);
+
+        // 逐个单元格
+        for (let j = 0; j < colNum; j++) {
+            const qNum = i + j + 1;
+            let td = document.createElement('td');
+            td.id = `card-${qNum}`;
+            td.innerText = qNum;
+            // 点击跳转题目
+            td.onclick = function () {
+                let idx = questions.findIndex(q => q.idx === qNum);
+                if (idx > -1) {
+                    current = idx;
+                    loadQuestion();
+                }
+            };
+            tr.appendChild(td);
+
+            // 超出总题数，停止创建
+            if (qNum >= total) break;
+        }
+        table.appendChild(tr);
+        rowIndex++;
+    }
+}
+
+// 重置答题卡状态
+function resetCardTable() {
+    const tds = document.querySelectorAll('.card-table td[id^="card-"]');
+    tds.forEach(td => {
+        const num = td.id.replace('card-', '');
+        td.innerText = num;
+        td.style.color = "";
+        td.classList.remove('current');
+    });
+}
+
+// 随机打乱题目
+function shuffleQuestions() {
+    let shuffled = [...originalData.data];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    questions = shuffled.map((item, index) => {
+        const f = item.fields;
+        const typeMap = { 1: 'judge', 2: 'choice', 3: 'multiple' };
+        const type = typeMap[item.type];
+        const options = [f.c_a, f.c_b, f.c_c, f.c_d].filter(i => i);
+        let answer = null;
+        if (type === 'judge') answer = f.answer === '对' ? 0 : 1;
+        else if (type === 'choice') answer = f.answer.charCodeAt(0) - 65;
+        else if (type === 'multiple') answer = f.answer.split(';').map(c => c.charCodeAt(0) - 65);
+        return {
+            idx: index + 1,
+            type,
+            question: f.content,
+            options,
+            answer,
+            image: item.img,
+            tip: f.skill_txt || f.solution,
+            raw: item
+        };
+    });
+    
+    // 重置答题记录、当前题号、答题卡、正确率
+    answerRecord = {};
+    current = 0;
+    resetCardTable();
+    renderCardTable();
+    updateAccuracy();
+    loadQuestion();
+    syncCollectStatus(); // 新增：随机打乱后强制刷新收藏状态
+    alert("题目已随机打乱！");
+}
+
+let answerRecord = {};
+let current = 0;
+let timer;
+let finalScore = 0;
+
+initQuestions();
+
+// 获取收藏列表（以题目id为唯一标识）
+function getFavList(){
+    return JSON.parse(localStorage.getItem('favoritesList')||'[]');
+}
+
+// 判断当前题目是否收藏（按题目唯一id匹配，不再用题号）
+function isCurrentQuestionFavorited(){
+    const list = getFavList();
+    const q = questions[current];
+    // 取原始数据里的唯一id
+    const qId = q.raw.id;
+    return list.some(item => item.raw.id === qId);
+}
+
+// 切换收藏/取消收藏
+function toggleCollect(){
+    let arr = getFavList();
+    let q = questions[current];
+    const qId = q.raw.id;
+    let idx = arr.findIndex(item => item.raw.id === qId);
+    
+    if(idx > -1){
+        arr.splice(idx, 1);
+    }else{
+        arr.push({...q});
+    }
+    localStorage.setItem('favoritesList', JSON.stringify(arr));
+    syncCollectStatus();
+}
+
+// 同步收藏图标与文字
+function syncCollectStatus(){
+    let el = document.querySelector('.footer-btns span');
+    let isFav = isCurrentQuestionFavorited();
+    el.innerText = isFav ? "★ 已收藏" : "☆ 收藏本题";
+    el.style.color = isFav ? "#f39c12" : "#666";
+}
+function syncCollectStatus(){
+    let el=document.querySelector('.footer-btns span');
+    el.innerText=isCurrentQuestionFavorited()?"★ 已收藏":"☆ 收藏本题";
+    el.style.color=isCurrentQuestionFavorited()?"#f39c12":"#666";
+}
+
+function loadQuestion() {
+    const q = questions[current];
+    const record = answerRecord[q.idx];
+    const typeLabel = { judge: '判断题', choice: '单选题', multiple: '多选题' }[q.type];
+    let qText, optArr = [];
+
+    if(globalMemorizeMode){
+        qText = `${q.idx}.(${typeLabel}) ${addKeywordFlash(q.question)}<br><br>`;
+        q.options.forEach(opt=>optArr.push(addKeywordFlash(opt)));
+        document.getElementById('tipContent').innerHTML = q.tip;
+        document.getElementById('tipBox').style.display = "block";
+    } else {
+        if(record && record.isRight === false){
+            qText = `${q.idx}.(${typeLabel}) ${addKeywordFlash(q.question)}<br><br>`;
+            q.options.forEach(opt=>optArr.push(addKeywordFlash(opt)));
+        } else {
+            qText = `${q.idx}.(${typeLabel}) ${clearBracket(q.question)}<br><br>`;
+            q.options.forEach(opt=>optArr.push(clearBracket(opt)));
+        }
+        document.getElementById('tipBox').style.display = "none";
+    }
+
+    q.options.forEach((_,i)=>{
+        let lab = ['A','B','C','D'][i];
+        qText += `${lab}: ${optArr[i]}<br>`;
+    });
+
+    document.getElementById('questionText').innerHTML = qText;
+    document.getElementById('imageArea').style.display = q.image?"block":"none";
+    if(q.image)document.getElementById('imageArea').innerHTML=`<img src="${q.image}">`;
+
+    let btnHtml = q.type==='judge'
+        ?`<button class="option-btn" onclick="select(0)">✓</button><button class="option-btn" onclick="select(1)">×</button>`
+        :`<button class="option-btn" onclick="select(0)">A</button><button class="option-btn" onclick="select(1)">B</button><button class="option-btn" onclick="select(2)">C</button><button class="option-btn" onclick="select(3)">D</button>`;
+    document.getElementById('optionBtns').innerHTML=btnHtml;
+
+    const btns = document.querySelectorAll('.option-btn');
+    const isAnswered = record && record.isRight !== undefined;
+
+    // 重置用户答案文本和颜色
+    const userAnswerEl = document.getElementById('userAnswer');
+    if (!record || !record.selectedText) {
+        userAnswerEl.innerText = "未选择";
+        userAnswerEl.style.color = "#999";
+    } else {
+        userAnswerEl.innerText = record.selectedText;
+        // 未确认的多选题，保持默认颜色
+        if (record.isRight === undefined) {
+            userAnswerEl.style.color = "";
+        } else {
+            // 已确认的题目，根据对错显示绿/红
+            userAnswerEl.style.color = record.isRight ? "#4CAF50" : "#F44336";
+        }
+    }
+
+    // 背题/显示答案模式
+    if(globalMemorizeMode || globalShowAnswer){
+        if(!isAnswered){
+            btns.forEach(b => b.disabled = false);
+            document.getElementById('multiConfirmBtn').style.display = q.type === 'multiple' ? 'inline-block' : 'none';
+        } else {
+            btns.forEach(b=>b.disabled=true);
+            document.getElementById('multiConfirmBtn').style.display = 'none';
+        }
+        // 标注正确答案
+        if(Array.isArray(q.answer)){
+            q.answer.forEach(i=>btns[i].classList.add('correct'));
+        }else{
+            btns[q.answer].classList.add('correct');
+        }
+    }else{
+        // 正常答题模式
+        if(!isAnswered){
+            btns.forEach(b=>b.disabled=false);
+            document.getElementById('multiConfirmBtn').style.display = q.type === 'multiple' ? 'inline-block' : 'none';
+            // 回填临时选中的选项样式
+            if(record && Array.isArray(record.selected)){
+                record.selected.forEach(idx => btns[idx].classList.add('selected'));
+                userAnswerEl.innerText = record.selectedText || "未选择";
+                userAnswerEl.style.color = "";
+            }
+        }
+    }
+
+    // 渲染已作答记录
+    if(isAnswered){
+        if(q.type==='multiple'){
+            record.selected.forEach(i=>btns[i].classList.add('selected'));
+            if(record.isRight) {
+                record.selected.forEach(i=>btns[i].classList.add('correct'));
+            } else {
+                record.selected.forEach(i=>{if(!q.answer.includes(i))btns[i].classList.add('wrong');});
+                q.answer.forEach(i=>btns[i].classList.add('correct'));
+            }
+        }else{
+            btns[record.selected].classList.add('selected');
+            if(record.isRight){
+                btns[record.selected].classList.add('correct');
+            }else{
+                btns[record.selected].classList.add('wrong');
+                if(!Array.isArray(q.answer)) btns[q.answer].classList.add('correct');
+            }
+        }
+        btns.forEach(b=>b.disabled=true);
+        document.getElementById('multiConfirmBtn').style.display='none';
+        
+        if(!globalMemorizeMode && !record.isRight){
+            document.getElementById('tipContent').innerHTML=q.tip;
+            document.getElementById('tipBox').style.display='block';
+        }
+    }
+
+    document.querySelectorAll('.card-table td').forEach(t=>t.classList.remove('current'));
+    document.getElementById(`card-${q.idx}`)?.classList.add('current');
+    updateCardTable();
+    syncCollectStatus();
+}
+
+function select(idx){
+    const q=questions[current];
+    if(answerRecord[q.idx]?.isRight!==undefined) return;
+    if(globalMemorizeMode || globalShowAnswer) return;
+    
+    let btns=document.querySelectorAll('.option-btn');
+    if(q.type==='judge'||q.type==='choice'){
+        let right=Array.isArray(q.answer)?q.answer.includes(idx):(idx===q.answer);
+        const label = q.type === 'judge' ? ['✓','×'][idx] : ['A','B','C','D'][idx];
+        answerRecord[q.idx]={selected:idx,selectedText:label,isRight:right};
+        btns[idx].classList.add('selected');
+        document.getElementById('userAnswer').innerText = label;
+        document.getElementById('userAnswer').style.color = "";
+        btns.forEach(b=>b.disabled=true);
+        right?btns[idx].classList.add('correct'):
+        (btns[idx].classList.add('wrong'),!Array.isArray(q.answer)&&btns[q.answer].classList.add('correct'));
+        updateCardTable();updateAccuracy();
+        if(!right) loadQuestion();
+        let autoNext=document.getElementById('autoNext').checked;
+        if(autoNext&&right)setTimeout(nextQuestion,600);
+    }
+    if(q.type==='multiple'){
+        let sel=answerRecord[q.idx]?.selected||[];
+        let pos=sel.indexOf(idx);
+        pos>-1?(sel.splice(pos,1),btns[idx].classList.remove('selected')):(sel.push(idx),btns[idx].classList.add('selected'));
+        const txt=sel.map(x=>["A","B","C","D"][x]).join(';')||"未选择";
+        document.getElementById('userAnswer').innerText=txt;
+        document.getElementById('userAnswer').style.color = "";
+        answerRecord[q.idx]={selected:sel,selectedText:txt,isRight:undefined};
+    }
+}
+
+function confirmMultiAnswer(){
+    const q=questions[current];
+    if(q.type!=='multiple')return;
+    let rec=answerRecord[q.idx];
+    if(!rec||!rec.selected.length)return alert("请先选择答案");
+    let ok=JSON.stringify(q.answer.sort())===JSON.stringify(rec.selected.sort());
+    rec.isRight=ok;
+    let btns=document.querySelectorAll('.option-btn');
+    ok?rec.selected.forEach(i=>btns[i].classList.add('correct')):(
+        rec.selected.forEach(i=>{if(!q.answer.includes(i))btns[i].classList.add('wrong');}),
+        q.answer.forEach(i=>btns[i].classList.add('correct')),
+        loadQuestion()
+    );
+    btns.forEach(b=>b.disabled=true);
+    document.getElementById('multiConfirmBtn').style.display='none';
+    updateCardTable();updateAccuracy();
+    let autoNext=document.getElementById('autoNext').checked;
+    if(autoNext&&ok)setTimeout(nextQuestion,600);
+}
+
+function updateCardTable(){
+    questions.forEach(q=>{
+        let r=answerRecord[q.idx];
+        let td=document.getElementById(`card-${q.idx}`);
+        if(!td||!r)return;
+        let str="";
+        if(q.type==='judge')str=["✓","×"][r.selected];
+        else if(q.type==='choice')str=["A","B","C","D"][r.selected];
+        else str=r.selected.map(i=>["A","B","C","D"][i]).join('');
+        td.innerText=str;
+        td.style.color=r.isRight?"green":"red";
+    });
+}
+function updateAccuracy(){
+    let r=0,t=Object.keys(answerRecord).length;
+    for(let k in answerRecord)if(answerRecord[k].isRight)r++;
+    document.getElementById('accuracy').innerText=t?(r/t*100).toFixed(2)+"%":"0.00%";
+}
+function prevQuestion(){if(current>0){current--;loadQuestion();}}
+function nextQuestion(){
+    let q=questions[current];
+    let r=answerRecord[q.idx];
+    if(q.type==='multiple'&&r&&r.isRight===undefined&&!confirm("多选题未确认，确定跳过？"))return;
+    if(current<questions.length-1){current++;loadQuestion();}else alert("已到最后一题");
+}
+
+// ========== 新增：结束确认弹窗控制 ==========
+// ========== 新增：结束确认弹窗控制 ==========
+function showEndConfirm() {
+    document.getElementById('endConfirmModal').style.display = 'flex';
+}
+function closeEndConfirm() {
+    document.getElementById('endConfirmModal').style.display = 'none';
+}
+
+// ========== 新增：按分数区间生成评语 ==========
+function getScoreComment(score) {
+    if (score === 100) {
+        return "🎉 满分通关！你就是驾考大神！";
+    } else if (score >= 90) {
+        return "✅ 恭喜及格！稳稳拿下科目四！";
+    } else if (score >= 80) {
+        return "💪 差一点就过了！再刷几套就稳了！";
+    } else if (score >= 70) {
+        return "📚 还需加把劲，易错点再巩固一下！";
+    } else if (score >= 60) {
+        return "⚠️ 及格线边缘徘徊，别灰心继续练！";
+    } else {
+        return "🔄 恭喜解锁「再来一次」！错题多刷几遍就过了！";
+    }
+}
+
+// ========== 新增：确认交卷后的结束逻辑 ==========
+function confirmEndExam() {
+    closeEndConfirm();
+    clearInterval(timer);
+    updateCardTable();
+
+    let right = 0;
+    const answered = Object.keys(answerRecord).length;
+    let wrongQuestions = [];
+
+    // 遍历答题记录，收集错题
+    for (const k in answerRecord) {
+        const q = questions.find(x => x.idx === parseInt(k));
+        if (answerRecord[k].isRight) {
+            right++;
+        } else if(q) {
+            // 存入完整错题数据
+            wrongQuestions.push(q.raw);
+        }
+    }
+
+    // 计算得分（按每题2分，满分100分，科目四标准）
+    finalScore = Math.round((right / questions.length) * 100);
+
+    // 模拟车型、科目（可根据业务自行修改）
+    const carType = "小车";
+    const subject = "科目一";
+
+    // 保存错题到本地存储
+    saveErrorRecords(wrongQuestions, right, answered, carType, subject);
+
+    // 显示结果弹窗 + 动态评语
+    document.getElementById('finalScore').innerText = finalScore;
+    document.getElementById('resultTipText').innerText = getScoreComment(finalScore);
+    document.getElementById('resultModal').style.display = 'flex';
+}
+
+// ========== 新增：结果弹窗按钮逻辑 ==========
+function viewWrongQuestions() {
+    // 这里可以后续跳转错题页面，先跳回首页
+    location.href = "index.html";
+}
+function backToIndex() {
+    location.href = "index.html";
+}
+
+// ========== 新增：错题保存核心函数（仅保存错题，不存成绩） ==========
+function saveErrorRecords(wrongQuestions, rightCount, answeredCount, carType, subject) {
+    const errorRecords = JSON.parse(localStorage.getItem('errorRecords') || '[]');
+    errorRecords.unshift({
+        id: Date.now(),
+        time: new Date().toLocaleString(),
+        carType: carType,
+        subject: subject,
+        paper: "科目一必考题一",
+        total: questions.length,
+        right: rightCount,
+        wrong: wrongQuestions.length,
+        questions: wrongQuestions
+    });
+    localStorage.setItem('errorRecords', JSON.stringify(errorRecords));
+}
+
+function startCountdown(){
+    let s=45*60;
+    timer=setInterval(()=>{
+        s--;
+        let m=Math.floor(s/60),ss=s%60;
+        document.getElementById('countdown').innerText=`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+        if(s<=0){clearInterval(timer);alert("考试时间结束");confirmEndExam();}
+    },1000);
+}
+function startExam(){
+    document.getElementById('startModal').style.display='none';
+    startCountdown();loadQuestion();
+}
+function logout(){if(confirm("确定退出？")){clearInterval(timer);location.href="login.html";}}
+function readQuestion(){
+    let text=clearBracket(questions[current].question);
+    if('speechSynthesis' in window){
+        speechSynthesis.cancel();
+        let u=new SpeechSynthesisUtterance(text);
+        u.lang="zh-CN";
+        speechSynthesis.speak(u);
+    }
+}
+function showTip(){
+    let box=document.getElementById('tipBox');
+    box.style.display=box.style.display==='block'?'none':'block';
+    document.getElementById('tipContent').innerHTML=questions[current].tip;
+}
+
+function toggleMemorizeMode(){
+    globalMemorizeMode = document.getElementById('memorizeMode').checked;
+    loadQuestion();
+}
+function toggleShowAnswerMode(){
+    globalShowAnswer = document.getElementById('showAnswerMode').checked;
+    loadQuestion();
+}
+
+window.onload=function(){
+    document.querySelector('.footer-btns span').onclick=toggleCollect;
+    document.querySelector('.btn-read').onclick=readQuestion;
+    document.querySelector('.btn-skill').onclick=showTip;
+    
+    document.getElementById('memorizeMode').onchange = toggleMemorizeMode;
+    document.getElementById('showAnswerMode').onchange = toggleShowAnswerMode;
+
+    syncCollectStatus(); // 新增：页面初始加载刷新收藏状态
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成绩清单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #f0f2f8;
+        }
+        /* 顶部栏，和你首页风格保持一致 */
+        .header {
+            height: 60px;
+            background: linear-gradient(90deg, #1abc9c 0%, #667eea 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 20px;
+        }
+        .header .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .page-header .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .page-header .clear-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        th {
+            background: #fafafa;
+            color: #666;
+            font-weight: normal;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fc;
+        }
+        .empty-tip {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="location.href='index.html'">&lt; 返回</button>
+        <span>爱考仕祝您早日拿证,加盟电话18583769998</span>
+        <div class="header-right">
+            <span>SGYC202613</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <a href="index.html" class="back-link">&lt; 返回</a>
+                <span style="margin-left: 10px;">成绩清单</span>
+            </div>
+            <button class="clear-btn" onclick="clearRecords()">清空</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>驾照类型</th>
+                    <th>科目</th>
+                    <th>答题用时</th>
+                    <th>获得分数</th>
+                    <th>模拟时间</th>
+                </tr>
+            </thead>
+            <tbody id="scoreList">
+                <!-- 数据由JS动态渲染 -->
+            </tbody>
+        </table>
+    </div>
+
+<script>
+function renderRecords() {
+    const list = document.getElementById('scoreList');
+    const records = JSON.parse(localStorage.getItem('scoreRecords') || '[]');
+
+    if(records.length === 0) {
+        list.innerHTML = `<tr><td colspan="5" class="empty-tip">暂无成绩记录</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    records.forEach(item => {
+        html += `
+        <tr>
+            <td>${item.carType}</td>
+            <td>${item.subject}</td>
+            <td>${item.usedTime}</td>
+            <td>${item.score}${item.comment}</td>
+            <td>${item.time}</td>
+        </tr>
+        `;
+    });
+    list.innerHTML = html;
+}
+
+function clearRecords() {
+    if(confirm("确定要清空所有成绩记录吗？")) {
+        localStorage.removeItem('scoreRecords');
+        renderRecords();
+    }
+}
+
+window.onload = function() {
+    renderRecords();
+}
+</script>
+</body>
+</html>

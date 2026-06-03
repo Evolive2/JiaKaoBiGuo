@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错题练习 - 科目四</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .header {
+            height: 60px;
+            background: linear-gradient(90deg, #1abc9c 0%, #667eea 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 20px;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 20px;
+        }
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+            background: white;
+        }
+        .sidebar {
+            width: 200px;
+            padding: 20px;
+            border-right: 1px solid #eee;
+        }
+        .box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .avatar {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .info p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .time-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .time-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .question-area {
+            flex: 1;
+        }
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .image-area {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-area img {
+            max-width: 400px;
+            max-height: 250px;
+        }
+        .answer-area {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .answer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        .answer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .option-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0 5px;
+        }
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+        .option-btn.selected {
+            background: #1abc9c;
+            color: white;
+            border-color: #1abc9c;
+        }
+        .option-btn.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .option-btn.wrong {
+            background: #F44336;
+            color: white;
+            border-color: #F44336;
+        }
+        .tip-box {
+            padding: 10px 12px;
+            background: #fef6f6;
+            border: 1px solid #ffcccc;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+            display: none;
+        }
+        .tip-title {
+            color: #ff4444;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        @keyframes flash {
+            0%, 100% { color: #e53935; background: transparent; }
+            50% { color: #e53935; background: #ffebee; }
+        }
+        .flash-keyword {
+            animation: flash 0.8s ease-in-out 3;
+            color: #e53935;
+            font-weight: bold;
+        }
+        .footer {
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .accuracy {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .footer-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .footer-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-read { background: #3498db; }
+        .btn-skill { background: #27ae60; }
+        .btn-video { background: #d35400; }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            color: #666;
+        }
+        .action-btns {
+            display: flex;
+            gap: 20px;
+        }
+        .action-btn {
+            padding: 10px 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            background: #f5f5f5;
+        }
+        .card {
+            width: 300px;
+            padding: 20px;
+            border-left: 1px solid #eee;
+        }
+        .card-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .card-table td, .card-table th {
+            border: 1px solid #ddd;
+            width: 10%;
+            height: 30px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .card-table th {
+            background: #667eea;
+            color: white;
+        }
+        .card-table td.current {
+            background: #667eea;
+            color: white;
+        }
+        .multi-confirm {
+            padding: 8px 20px;
+            background: #ff5722;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+            margin-left: 10px;
+        }
+        /* 结束确认弹窗 */
+        .end-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .end-confirm-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+        .end-confirm-title {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .end-confirm-tip {
+            line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .end-confirm-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .end-btn-cancel {
+            padding: 8px 20px;
+            background: #eee;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .end-btn-confirm {
+            padding: 8px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* 结果弹窗 */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        .result-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+        .result-title {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .result-score {
+            font-size: 18px;
+            color: blue;
+            margin-bottom: 15px;
+        }
+        .result-tip {
+            font-size: 18px;
+            color: red;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .result-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .result-btn-wrong {
+            padding: 8px 20px;
+            background: #eee;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .result-btn-back {
+            padding: 8px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="location.href='wrong_record.html'">&lt; 返回</button>
+        <span>错题专项练习</span>
+        <div class="header-right">
+            <span>SGYC202613</span>
+            <button class="logout-btn" onclick="logout()">⏻</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="box">
+                <p style="color: #66aaff;">星升路交规</p>
+                <p style="margin-top:10px;">错题练习</p>
+            </div>
+            <div class="avatar">
+                <img src="https://img.icons8.com/fluency/96/000000/user-male-circle.png" width="60">
+            </div>
+            <div class="info">
+                <p style="color: #66aaff;">考生信息</p>
+                <p>考生姓名: SGYC202613</p>
+                <p>考试车型: 小车</p>
+                <p>科 &nbsp;&nbsp;&nbsp;&nbsp;目: 科目四</p>
+                <p>练习类型: 错题复盘</p>
+            </div>
+            <div class="time-box">
+                <p style="color: #66aaff;">剩余时间</p>
+                <div class="time-text" id="countdown">45:00</div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="question-area">
+                <div class="questionText" id="questionText"></div>
+                <div class="image-area" id="imageArea"></div>
+            </div>
+            <div class="answer-area">
+                <div class="answer-left">
+                    <span>您选择的答案:</span>
+                    <span id="userAnswer">未选择</span>
+                </div>
+                <div class="answer-right">
+                    <div id="optionBtns"></div>
+                    <button class="multi-confirm" id="multiConfirmBtn" onclick="confirmMultiAnswer()">确认答案</button>
+                </div>
+            </div>
+            <div class="tip-box" id="tipBox">
+                <div class="tip-title">答题技巧</div>
+                <div id="tipContent"></div>
+            </div>
+            <div class="footer">
+                <div class="accuracy">正确率: <span id="accuracy">0.00%</span></div>
+                <div class="footer-btns">
+                    <button class="footer-btn btn-read">读题</button>
+                    <button class="footer-btn btn-skill">答题技巧</button>
+                    <button class="footer-btn btn-video">视频教程</button>
+                    <span>☆ 收藏本题</span>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="memorizeMode"> 背题模式</label>
+                    <label><input type="checkbox" id="showAnswerMode"> 显示正确答案</label>
+                    <label><input type="checkbox" id="autoNext"> 答对自动下一题</label>
+                </div>
+                <div class="action-btns">
+                    <button class="action-btn" onclick="prevQuestion()">上一题</button>
+                    <button class="action-btn" onclick="nextQuestion()">下一题</button>
+                    <button class="action-btn" onclick="showEndConfirm()">结束</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <table class="card-table" id="cardTable"></table>
+        </div>
+    </div>
+
+    <!-- 结束确认弹窗 -->
+    <div class="end-confirm-modal" id="endConfirmModal">
+        <div class="end-confirm-box">
+            <div class="end-confirm-title">练习结束确认</div>
+            <div class="end-confirm-tip">
+                操作提示:<br>
+                1：点击【结束功能】，<br>将提交本次练习结果！<br>
+                2：点击【继续练习】，<br>关闭本窗口继续答题！
+            </div>
+            <div class="end-confirm-btns">
+                <button class="end-btn-cancel" onclick="closeEndConfirm()">继续练习</button>
+                <button class="end-btn-confirm" onclick="confirmEndExam()">确认结束</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 练习结果弹窗 -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-box">
+            <div class="result-title">练习结果查看</div>
+            <div class="result-score">本次得分: <span id="finalScore">0</span></div>
+            <div class="result-tip" id="resultTipText">加油练习！</div>
+            <div class="result-btns">
+                <button class="result-btn-back" onclick="backToRecord()">返回错题列表</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// 工具函数
+function clearBracket(str){
+    return str.replace(/【|】/g,"");
+}
+function addKeywordFlash(str){
+    return str.replace(/【([^】]+)】/g,'<span class="flash-keyword">$1</span>');
+}
+
+let globalMemorizeMode = false;
+let globalShowAnswer = false;
+let questions = [];
+let answerRecord = {};
+let current = 0;
+let timer;
+let finalScore = 0;
+
+// 加载本地错题数据
+function initWrongQuestions() {
+    const wrongList = JSON.parse(localStorage.getItem('tempWrongList') || '[]');
+    questions = wrongList.map((item, index) => {
+        const f = item.fields;
+        const typeMap = { 1: 'judge', 2: 'choice', 3: 'multiple' };
+        const type = typeMap[item.type];
+        const options = [f.c_a, f.c_b, f.c_c, f.c_d].filter(i => i);
+        let answer = null;
+        if (type === 'judge') answer = f.answer === '对' ? 0 : 1;
+        else if (type === 'choice') answer = f.answer.charCodeAt(0) - 65;
+        else if (type === 'multiple') answer = f.answer.split(';').map(c => c.charCodeAt(0) - 65);
+        return {
+            idx: index + 1,
+            type,
+            question: f.content,
+            options,
+            answer,
+            image: item.img,
+            tip: f.skill_txt || f.solution,
+            raw: item
+        };
+    });
+    renderCardTable();
+}
+
+// 动态答题卡
+function renderCardTable() {
+    const table = document.getElementById('cardTable');
+    table.innerHTML = '';
+    const total = questions.length;
+    const colNum = 10;
+
+    let headTr = document.createElement('tr');
+    let headTh = document.createElement('th');
+    headTh.innerText = '题';
+    headTr.appendChild(headTh);
+    for (let c = 1; c <= colNum; c++) {
+        let th = document.createElement('th');
+        th.innerText = c;
+        headTr.appendChild(th);
+    }
+    table.appendChild(headTr);
+
+    let rowIndex = 1;
+    for (let i = 0; i < total; i += colNum) {
+        let tr = document.createElement('tr');
+        let rowTh = document.createElement('th');
+        rowTh.innerText = rowIndex;
+        tr.appendChild(rowTh);
+
+        for (let j = 0; j < colNum; j++) {
+            const qNum = i + j + 1;
+            let td = document.createElement('td');
+            td.id = `card-${qNum}`;
+            td.innerText = qNum;
+            td.onclick = function () {
+                let idx = questions.findIndex(q => q.idx === qNum);
+                if (idx > -1) {
+                    current = idx;
+                    loadQuestion();
+                }
+            };
+            tr.appendChild(td);
+            if (qNum >= total) break;
+        }
+        table.appendChild(tr);
+        rowIndex++;
+    }
+}
+
+// 加载题目
+function loadQuestion() {
+    const q = questions[current];
+    const record = answerRecord[q.idx];
+    const typeLabel = { judge: '判断题', choice: '单选题', multiple: '多选题' }[q.type];
+    let qText, optArr = [];
+    const isAnswered = record && record.isRight !== undefined;
+
+    if(globalMemorizeMode){
+        qText = `${q.idx}.(${typeLabel}) ${addKeywordFlash(q.question)}<br><br>`;
+        q.options.forEach(opt=>optArr.push(addKeywordFlash(opt)));
+        document.getElementById('tipContent').innerHTML = q.tip;
+        document.getElementById('tipBox').style.display = "block";
+    } else {
+        if(record && record.isRight === false){
+            qText = `${q.idx}.(${typeLabel}) ${addKeywordFlash(q.question)}<br><br>`;
+            q.options.forEach(opt=>optArr.push(addKeywordFlash(opt)));
+        } else {
+            qText = `${q.idx}.(${typeLabel}) ${clearBracket(q.question)}<br><br>`;
+            q.options.forEach(opt=>optArr.push(clearBracket(opt)));
+        }
+        document.getElementById('tipBox').style.display = "none";
+    }
+
+    q.options.forEach((_,i)=>{
+        let lab = ['A','B','C','D'][i];
+        qText += `${lab}: ${optArr[i]}<br>`;
+    });
+
+    document.getElementById('questionText').innerHTML = qText;
+    document.getElementById('imageArea').style.display = q.image?"block":"none";
+    if(q.image)document.getElementById('imageArea').innerHTML=`<img src="${q.image}">`;
+
+    let btnHtml = q.type==='judge'
+        ?`<button class="option-btn" onclick="select(0)">✓</button><button class="option-btn" onclick="select(1)">×</button>`
+        :`<button class="option-btn" onclick="select(0)">A</button><button class="option-btn" onclick="select(1)">B</button><button class="option-btn" onclick="select(2)">C</button><button class="option-btn" onclick="select(3)">D</button>`;
+    document.getElementById('optionBtns').innerHTML=btnHtml;
+
+    const btns = document.querySelectorAll('.option-btn');
+    const userAnswerEl = document.getElementById('userAnswer');
+
+    if (!record || !record.selectedText) {
+        userAnswerEl.innerText = "未选择";
+        userAnswerEl.style.color = "#999";
+    } else {
+        userAnswerEl.innerText = record.selectedText;
+        if (record.isRight === undefined) {
+            userAnswerEl.style.color = "";
+        } else {
+            userAnswerEl.style.color = record.isRight ? "#4CAF50" : "#F44336";
+        }
+    }
+
+    document.getElementById('multiConfirmBtn').style.display = q.type === 'multiple' ? 'inline-block' : 'none';
+
+    if(globalMemorizeMode || globalShowAnswer){
+        if(!isAnswered){
+            btns.forEach(b => b.disabled = false);
+            document.getElementById('multiConfirmBtn').style.display = q.type === 'multiple' ? 'inline-block' : 'none';
+        } else {
+            btns.forEach(b=>b.disabled=true);
+            document.getElementById('multiConfirmBtn').style.display = 'none';
+        }
+        if(Array.isArray(q.answer)){
+            q.answer.forEach(i=>btns[i].classList.add('correct'));
+        }else{
+            btns[q.answer].classList.add('correct');
+        }
+    }else{
+        if(!isAnswered){
+            btns.forEach(b=>b.disabled=false);
+            document.getElementById('multiConfirmBtn').style.display = q.type === 'multiple' ? 'inline-block' : 'none';
+            if(record && Array.isArray(record.selected)){
+                record.selected.forEach(idx => btns[idx].classList.add('selected'));
+            }
+        }
+    }
+
+    if(isAnswered){
+        if(q.type==='multiple'){
+            record.selected.forEach(i=>btns[i].classList.add('selected'));
+            if(record.isRight) {
+                record.selected.forEach(i=>btns[i].classList.add('correct'));
+            } else {
+                record.selected.forEach(i=>{if(!q.answer.includes(i))btns[i].classList.add('wrong');});
+                q.answer.forEach(i=>btns[i].classList.add('correct'));
+            }
+        }else{
+            btns[record.selected].classList.add('selected');
+            if(record.isRight){
+                btns[record.selected].classList.add('correct');
+            }else{
+                btns[record.selected].classList.add('wrong');
+                if(!Array.isArray(q.answer)) btns[q.answer].classList.add('correct');
+            }
+        }
+        btns.forEach(b=>b.disabled=true);
+        document.getElementById('multiConfirmBtn').style.display='none';
+        if(!globalMemorizeMode && !record.isRight){
+            document.getElementById('tipContent').innerHTML=q.tip;
+            document.getElementById('tipBox').style.display='block';
+        }
+    }
+
+    document.querySelectorAll('.card-table td').forEach(t=>t.classList.remove('current'));
+    document.getElementById(`card-${q.idx}`)?.classList.add('current');
+    updateCardTable();
+    updateAccuracy();
+}
+
+// 选择答案
+function select(idx){
+    const q=questions[current];
+    if(answerRecord[q.idx]?.isRight!==undefined) return;
+    if(globalMemorizeMode || globalShowAnswer) return;
+    
+    let btns=document.querySelectorAll('.option-btn');
+    if(q.type==='judge'||q.type==='choice'){
+        let right=Array.isArray(q.answer)?q.answer.includes(idx):(idx===q.answer);
+        const label = q.type === 'judge' ? ['✓','×'][idx] : ['A','B','C','D'][idx];
+        answerRecord[q.idx]={selected:idx,selectedText:label,isRight:right};
+        btns[idx].classList.add('selected');
+        document.getElementById('userAnswer').innerText = label;
+        document.getElementById('userAnswer').style.color = "";
+        btns.forEach(b=>b.disabled=true);
+        right?btns[idx].classList.add('correct'):
+        (btns[idx].classList.add('wrong'),!Array.isArray(q.answer)&&btns[q.answer].classList.add('correct'));
+        updateCardTable();updateAccuracy();
+        if(!right) loadQuestion();
+        let autoNext=document.getElementById('autoNext').checked;
+        if(autoNext&&right)setTimeout(nextQuestion,600);
+    }
+    if(q.type==='multiple'){
+        let sel=answerRecord[q.idx]?.selected||[];
+        let pos=sel.indexOf(idx);
+        pos>-1?(sel.splice(pos,1),btns[idx].classList.remove('selected')):(sel.push(idx),btns[idx].classList.add('selected'));
+        const txt=sel.map(x=>["A","B","C","D"][x]).join(';')||"未选择";
+        document.getElementById('userAnswer').innerText=txt;
+        document.getElementById('userAnswer').style.color = "";
+        answerRecord[q.idx]={selected:sel,selectedText:txt,isRight:undefined};
+    }
+}
+
+// 多选题确认
+function confirmMultiAnswer(){
+    const q=questions[current];
+    if(q.type!=='multiple')return;
+    let rec=answerRecord[q.idx];
+    if(!rec||!rec.selected.length)return alert("请先选择答案");
+    let ok=JSON.stringify(q.answer.sort())===JSON.stringify(rec.selected.sort());
+    rec.isRight=ok;
+    let btns=document.querySelectorAll('.option-btn');
+    ok?rec.selected.forEach(i=>btns[i].classList.add('correct')):(
+        rec.selected.forEach(i=>{if(!q.answer.includes(i))btns[i].classList.add('wrong');}),
+        q.answer.forEach(i=>btns[i].classList.add('correct')),
+        loadQuestion()
+    );
+    btns.forEach(b=>b.disabled=true);
+    document.getElementById('multiConfirmBtn').style.display='none';
+    updateCardTable();updateAccuracy();
+    let autoNext=document.getElementById('autoNext').checked;
+    if(autoNext&&ok)setTimeout(nextQuestion,600);
+}
+
+// 更新答题卡文字
+function updateCardTable(){
+    questions.forEach(q=>{
+        let r=answerRecord[q.idx];
+        let td=document.getElementById(`card-${q.idx}`);
+        if(!td||!r)return;
+        let str="";
+        if(q.type==='judge')str=["✓","×"][r.selected];
+        else if(q.type==='choice')str=["A","B","C","D"][r.selected];
+        else str=r.selected.map(i=>["A","B","C","D"][i]).join('');
+        td.innerText=str;
+        td.style.color=r.isRight?"green":"red";
+    });
+}
+
+// 正确率
+function updateAccuracy(){
+    let r=0,t=Object.keys(answerRecord).length;
+    for(let k in answerRecord)if(answerRecord[k].isRight)r++;
+    document.getElementById('accuracy').innerText=t?(r/t*100).toFixed(2)+"%":"0.00%";
+}
+
+// 上下题
+function prevQuestion(){if(current>0){current--;loadQuestion();}}
+function nextQuestion(){
+    let q=questions[current];
+    let r=answerRecord[q.idx];
+    if(q.type==='multiple'&&r&&r.isRight===undefined&&!confirm("多选题未确认，确定跳过？"))return;
+    if(current<questions.length-1){current++;loadQuestion();}else alert("已到最后一题");
+}
+
+// 倒计时
+function startCountdown(){
+    let s=45*60;
+    timer=setInterval(()=>{
+        s--;
+        let m=Math.floor(s/60),ss=s%60;
+        document.getElementById('countdown').innerText=`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+        if(s<=0){clearInterval(timer);alert("练习时间结束");confirmEndExam();}
+    },1000);
+}
+
+// 结束弹窗
+function showEndConfirm() {
+    document.getElementById('endConfirmModal').style.display = 'flex';
+}
+function closeEndConfirm() {
+    document.getElementById('endConfirmModal').style.display = 'none';
+}
+
+// 分数评语
+function getScoreComment(score) {
+    if (score === 100) {
+        return "🎉 满分通关！错题全部掌握！";
+    } else if (score >= 90) {
+        return "✅ 表现优秀！知识点掌握牢固！";
+    } else if (score >= 80) {
+        return "💪 不错哦，继续巩固薄弱点！";
+    } else if (score >= 70) {
+        return "📚 还需多加练习，吃透错题！";
+    } else if (score >= 60) {
+        return "⚠️ 基础偏弱，反复刷题加深记忆！";
+    } else {
+        return "🔄 继续复盘错题，争取下次满分！";
+    }
+}
+
+// 结束练习
+function confirmEndExam() {
+    closeEndConfirm();
+    clearInterval(timer);
+    updateCardTable();
+
+    let right = 0;
+    const answered = Object.keys(answerRecord).length;
+    for (const k in answerRecord) {
+        if (answerRecord[k].isRight) right++;
+    }
+    finalScore = Math.round((right / questions.length) * 100);
+
+    document.getElementById('finalScore').innerText = finalScore;
+    document.getElementById('resultTipText').innerText = getScoreComment(finalScore);
+    document.getElementById('resultModal').style.display = 'flex';
+}
+
+// 返回错题列表
+function backToRecord() {
+    location.href = "wrong_record.html";
+}
+
+// 退出登录
+function logout(){
+    if(confirm("确定退出？")){
+        clearInterval(timer);
+        location.href="login.html";
+    }
+}
+
+// 模式切换
+function toggleMemorizeMode(){
+    globalMemorizeMode = document.getElementById('memorizeMode').checked;
+    loadQuestion();
+}
+function toggleShowAnswerMode(){
+    globalShowAnswer = document.getElementById('showAnswerMode').checked;
+    loadQuestion();
+}
+
+// 语音读题
+function readQuestion(){
+    let text=clearBracket(questions[current].question);
+    if('speechSynthesis' in window){
+        speechSynthesis.cancel();
+        let u=new SpeechSynthesisUtterance(text);
+        u.lang="zh-CN";
+        speechSynthesis.speak(u);
+    }
+}
+function showTip(){
+    let box=document.getElementById('tipBox');
+    box.style.display=box.style.display==='block'?'none':'block';
+    document.getElementById('tipContent').innerHTML=questions[current].tip;
+}
+
+window.onload=function(){
+    initWrongQuestions();
+    startCountdown();
+    loadQuestion();
+
+    document.querySelector('.btn-read').onclick=readQuestion;
+    document.querySelector('.btn-skill').onclick=showTip;
+    document.getElementById('memorizeMode').onchange = toggleMemorizeMode;
+    document.getElementById('showAnswerMode').onchange = toggleShowAnswerMode;
+};
+</script>
+</body>
+</html>

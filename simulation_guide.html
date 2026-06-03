@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>驾驶人理论考试系统</title>
+    <style>
+        *{margin:0;padding:0;font-family:"微软雅黑",sans-serif;}
+        body{background:#f0f2f5;}
+        
+        /* 顶部栏：完全复刻你截图的背景+文字效果 */
+        .header{
+            width:100%;
+            height:120px;
+            line-height:120px;
+            background: url('imgs/驾驶人理论考试系统-顶图.png') no-repeat center center;
+            background-size: cover;
+            position:relative;
+        }
+        /* 背景半透明蓝色遮罩，还原你截图的蓝色效果 */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 153, 255, 0.75);
+            z-index: 1;
+        }
+        .backBtn{
+            position:absolute;
+            left:30px;
+            top:50%;
+            transform:translateY(-50%);
+            width:60px;
+            height:60px;
+            font-size:28px;
+            background:#fff;
+            border:none;
+            border-radius:50%;
+            cursor:pointer;
+            color:#333;
+            z-index: 2;
+        }
+        .header-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 56px;
+            font-weight: bold;
+            color: #0077cc;
+            text-shadow: 
+                -2px -2px 0 #fff,
+                2px -2px 0 #fff,
+                -2px 2px 0 #fff,
+                2px 2px 0 #fff;
+            z-index: 2;
+        }
+        .sub-title {
+            text-align: right;
+            color: #999;
+            font-size: 14px;
+            margin: 5px 10px 0 0;
+        }
+
+        /* 主容器 */
+        .main{
+            width:1200px;
+            margin:20px auto;
+            background:#fff;
+            border:1px solid #ccc;
+            display:flex;
+        }
+
+        /* 左侧考试须知 */
+        .left{
+            width:50%;
+            padding:30px;
+            border-right:1px solid #ccc;
+        }
+        .left h2{
+            font-size:24px;
+            margin-bottom:20px;
+            color:#333;
+        }
+        .left p{
+            font-size:18px;
+            line-height:36px;
+            color:#333;
+        }
+
+        /* 右侧考生信息 */
+        .right{
+            width:50%;
+            padding:30px;
+            text-align:center;
+        }
+        .right h2{
+            font-size:24px;
+            margin-bottom:40px;
+            color:#333;
+        }
+        .info{
+            font-size:22px;
+            line-height:60px;
+            color:#333;
+        }
+        .info span{
+            color:red;
+            font-weight:bold;
+        }
+        .startBtn{
+            width:160px;
+            height:50px;
+            font-size:20px;
+            margin-top:40px;
+            cursor:pointer;
+            background:#f0f0f0;
+            border:1px solid #999;
+        }
+        .tip{
+            margin-top:60px;
+            font-size:16px;
+            color:#666;
+            line-height:28px;
+            text-align:left;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部：带背景图的驾驶人理论考试系统（完全按你截图） -->
+<div class="header">
+    <button class="backBtn" onclick="history.back()">&lt;</button>
+    <div class="header-title">驾驶人理论考试系统</div>
+</div>
+<div class="sub-title">Sub of a Driver Training System</div>
+
+<!-- 主体内容 -->
+<div class="main">
+    <!-- 左侧：考试须知 -->
+    <div class="left">
+        <h2>考试须知：</h2>
+        <p>1.遵守考场纪律，服从监考员指挥。</p>
+        <p>2.进入考场，手机关机，禁止抽烟和吃零食。</p>
+        <p>3.未经工作人员允许，考试禁止随意出入考场。</p>
+        <p>4.考场内禁止大声喧哗，禁止随意走动。</p>
+        <p>5.考试中认真答题，不准交头接耳。</p>
+        <p>6.考试中不准冒名顶替，不准弄虚作假。</p>
+        <p>7.注意考场卫生，禁止随地吐痰，禁止乱扔纸屑。</p>
+        <p>8.爱护公物及考试设备。</p>
+    </div>
+
+    <!-- 右侧：考生信息 -->
+    <div class="right">
+        <h2 id="roomTitle">科目一考场 第10考台</h2>
+        <div class="info">身份证号：<span id="idCard">******************</span></div>
+        <div class="info">考生姓名：<span id="userName">SGYC202613</span></div>
+        <button class="startBtn" onclick="startExam()">确定</button>
+        <div class="tip">
+            操作提示：每题考试答案确定后，点击【下一题】，电脑立即判定所选答案，如选择错误，系统将提示正确答案，提示后不允许修改答案。
+        </div>
+    </div>
+</div>
+
+<script>
+// 读取本地存储参数
+const simConfig = JSON.parse(localStorage.getItem('simulationConfig') || '{}');
+let titleText = '';
+
+// 区分三种场景：普通车型 / 三力测试 / 无人机
+if(simConfig.carType === '无人机'){
+    // 无人机：执照+机型
+    titleText = `${simConfig.license}·${simConfig.droneType}考场 第10考台`;
+}else if(simConfig.carType === '三力测试'){
+    // 三力测试无科目
+    titleText = `三力测试考场 第10考台`;
+}else{
+    // 小车/客车/货车/摩托 = 科目+考场
+    const sub = simConfig.subject || '科目一';
+    titleText = `${sub}考场 第10考台`;
+}
+
+// 赋值标题
+document.getElementById('roomTitle').innerText = titleText;
+
+// 进入考试，把参数继续带到考试页（可选：localStorage不变，考试页自行读取）
+function startExam() {
+    location.href = "simulation_exam.html";
+}
+</script>
+
+</body>
+</html>
