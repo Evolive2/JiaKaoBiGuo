@@ -420,6 +420,17 @@
     </div>
 
     <script>
+        // ========= 登录拦截：没有token强制跳转登录页 =========
+        if (!localStorage.getItem("token")) {
+            location.href = "login.html";
+        }
+        // 退出登录函数
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("loginUser");
+            location.href = "login.html";
+        }
+        
         let currCar = "小车";
         let currSubject = "科目一";
         let currMode = "精选试卷";
