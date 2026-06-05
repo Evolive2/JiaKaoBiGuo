@@ -1,7 +1,7 @@
 
 <script>
 // 页面载入先校验登录状态，无登录凭证强制跳转登录页
-const loginToken = localStorage.getItem("userToken");
+const loginToken = localStorage.getItem("userLoginToken");
 if (!loginToken) {
     location.href = "login.html";
 }
