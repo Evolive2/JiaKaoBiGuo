@@ -257,8 +257,8 @@ if (!loginToken) {
     <div class="header">
         <span>爱考仕祝您早日拿证,加盟电话18583769998</span>
         <div class="header-right">
-            <span>SGYC202613</span>
-            <button onclick="localStorage.removeItem('userLoginToken');location.href='login.html'" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">⏻</button>
+            <span id="showUserName"></span>
+            <button onclick="localStorage.removeItem('userLoginToken');localStorage.removeItem('userName');localStorage.removeItem('userVip');location.href='login.html'" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">⏻</button>
         </div>
     </div>
 
