@@ -182,7 +182,6 @@
                 localStorage.setItem("userLoginToken", result.data.token);
                 // 顺带存储用户账号、VIP状态
                 localStorage.setItem("userName", result.data.username);
-                localStorage.setItem("userVip", result.data.vip);
 
                 // 记住密码逻辑
                 if(isRemember){
@@ -192,7 +191,6 @@
                     localStorage.removeItem("saveUserName");
                     localStorage.removeItem("savePwd");
                 }
-                alert("登录成功，进入系统");
                 location.href = "index.html";
             }else{
                 // 账号错误、服务器异常提示
