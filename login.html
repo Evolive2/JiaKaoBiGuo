@@ -142,52 +142,64 @@
     <script>
     //页面加载：读取记住密码缓存，自动回填账号密码
     window.onload = function(){
-        let saveAcc = localStorage.getItem("userAcc");
-        let savePwd = localStorage.getItem("userPwd");
-        if(saveAcc && savePwd){
-            document.getElementById('username').value = saveAcc;
-            document.getElementById('password').value = savePwd;
-            document.getElementById('remember').checked = true;
+        // 页面加载回填记住的账号密码
+        let saveUser = localStorage.getItem("saveUserName");
+        let savePwd = localStorage.getItem("savePwd");
+        let rememberCheck = document.getElementById("remember");
+        if(saveUser && savePwd){
+            document.getElementById("username").value = saveUser;
+            document.getElementById("password").value = savePwd;
+            rememberCheck.checked = true;
         }
     }
 
-    //登录核心方法
-    function login() {
+    // 登录函数：调用Cloudflare Worker后端接口校验
+    async function login() {
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
-        const remember = document.getElementById('remember').checked;
+        const isRemember = document.getElementById('remember').checked;
 
-        //商用授权账号配置（后期对接D1数据库可删掉这段，从接口拉取账号）
-        const rightUser = "SGYC202613";
-        const rightPwd = "123456";
-
-        if(username === ""){
-            alert("请输入账号");
-            return;
-        }
-        if(password === ""){
-            alert("请输入密码");
+        if(!username || !password){
+            alert("账号或密码不能为空！");
             return;
         }
 
-        //账号密码校验
-        if(username === rightUser && password === rightPwd){
-            //登录成功：生成登录令牌存入本地
-            localStorage.setItem("userToken", Date.now() + "_" + username);
-            localStorage.setItem("loginUserName", username);
+        // ==========替换成你自己的Worker域名！！==========
+        const apiUrl = "https://kaoshi-login-api.xxx.workers.dev/api/login";
 
-            //勾选记住密码→存储账号密码，否则清空存储
-            if(remember){
-                localStorage.setItem("userAcc", username);
-                localStorage.setItem("userPwd", password);
+        try {
+            // 请求后端登录接口
+            let res = await fetch(apiUrl, {
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({username,password})
+            })
+            let result = await res.json();
+
+            // 后端返回200=登录成功
+            if(result.code === 200){
+                // 存储登录token（index首页靠token鉴权）
+                localStorage.setItem("userLoginToken", result.data.token);
+                // 顺带存储用户账号、VIP状态
+                localStorage.setItem("userName", result.data.username);
+                localStorage.setItem("userVip", result.data.vip);
+
+                // 记住密码逻辑
+                if(isRemember){
+                    localStorage.setItem("saveUserName",username);
+                    localStorage.setItem("savePwd",password);
+                }else{
+                    localStorage.removeItem("saveUserName");
+                    localStorage.removeItem("savePwd");
+                }
+                alert("登录成功，进入系统");
+                location.href = "index.html";
             }else{
-                localStorage.removeItem("userAcc");
-                localStorage.removeItem("userPwd");
+                // 账号错误、服务器异常提示
+                alert(result.msg);
             }
-            alert("登录成功");
-            location.href = "index.html";
-        }else{
-            alert("账号或密码错误，请核对");
+        }catch(e){
+            alert("接口请求失败，网络异常");
         }
     }
     </script>
