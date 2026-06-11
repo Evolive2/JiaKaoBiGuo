@@ -444,291 +444,17 @@
         const licenseSel = document.getElementById('licenseSel');
         const droneTypeSel = document.getElementById('droneTypeSel');
 
-        // 下拉变更同步参数
         licenseSel.onchange = function(){currLicense=this.value;renderQuestion();}
         droneTypeSel.onchange = function(){currDroneType=this.value;renderQuestion();}
 
-        const questionData = {
-            "小车":{
-                "科目一":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目一必考题一","科目一必考题二","科目一必考题三","科目一必考题四","科目一必考题五","科目一必考题六"]},
-                        {color:"btn-orange",list:["科目一强化试题一","科目一强化试题二","科目一强化试题三","专用题一","科目一新增常识题"]},
-                        {color:"btn-blue",list:["科目一选做题一","科目一选做题二","科目一选做题三","科目一选做题四","科目一选做题五"]}
-                    ],
-                    "考前集训":[{color:"btn-red",list:["科目一集训一","科目一集训二","科目一集训三","科目一集训四"]}],
-                    "考前冲刺":[{color:"btn-red",list:["科目一考前冲刺一","科目一考前冲刺二"]}]
-                },
-                "科目四":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目四必考题一","科目四必考题二","科目四必考题三","科目四必考题四","科目四必考题五","考前必做"]},
-                        {color:"btn-blue",list:["科目四选做题一","科目四选做题二","科目四选做题三","科目四选做题四","科目四选做题五","科目四选做题六"]},
-                        {color:"btn-blue",list:["科目四专用题一","科目四专用题二","科目四巩固题一"]}
-                    ],
-                    "考前集训":[{color:"btn-red",list:["科目四集训一","科目四集训二","科目四集训三","科目四集训四"]}],
-                    "考前冲刺":[{color:"btn-red",list:["科目四冲刺一","科目四冲刺二"]}]
-                },
-                "注销恢复":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目一必考题一","科目一必考题二","科目一必考题三","科目一必考题四","科目一必考题六"]},
-                        {color:"btn-orange",list:["科目一强化试题一","科目一强化试题二","科目一强化试题三","科目一新增常识题"]},
-                        {color:"btn-blue",list:["科目一选做题一","科目一选做题二","科目一选做题三","科目一选做题四","科目一选做题五"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                },
-                "满分学习":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["满分精选试题一","满分精选试题二","满分精选试题三","满分精选试题四","满分精选试题五","满分精选试题六","满分精选试题七"]},
-                        {color:"btn-orange",list:["满分常识题一","满分常识题二","满分常识题三","满分常识题四"]},
-                        {color:"btn-blue",list:[]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                }
-            },
-            "客车":{
-                "科目一":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目一必考题一","科目一必考题二","科目一必考题三","科目一必考题四","科目一必考题五","科目一必考题六"]},
-                        {color:"btn-orange",list:["科目一强化试题一","科目一强化试题二","科目一强化试题三","专用题一","科目一新增常识题","客车专用试题"]},
-                        {color:"btn-blue",list:["科目一选做题一","科目一选做题二","科目一选做题三","科目一选做题四","科目一选做题五"]}
-                    ],
-                    "考前集训":[{color:"btn-red",list:["科目一集训一","科目一集训二","科目一集训三","科目一集训四"]}],
-                    "考前冲刺":[{color:"btn-red",list:["科目一冲刺一","科目一冲刺二"]}]
-                },
-                "科目四":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目四必考题一","科目四必考题二","科目四必考题三","科目四必考题四","科目四必考题五","考前必做"]},
-                        {color:"btn-blue",list:["科目四选做题一","科目四选做题二","科目四选做题三","科目四选做题四","科目四选做题五","科目四选做题六"]},
-                        {color:"btn-blue",list:["科目四专用题一","科目四专用题二","科目四巩固题一"]}
-                    ],
-                    "考前集训":[{color:"btn-red",list:["科目四集训一","科目四集训二","科目四集训三","科目四集训四"]}],
-                    "考前冲刺":[{color:"btn-red",list:["科目四冲刺一","科目四冲刺二"]}]
-                },
-                "注销恢复":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目一必考题一","科目一必考题二","科目一必考题三","科目一必考题四","科目一必考题六"]},
-                        {color:"btn-orange",list:["科目一强化试题一","科目一强化试题二","科目一强化试题三","科目一新增常识题","客车专用试题"]},
-                        {color:"btn-blue",list:["科目一选做题一","科目一选做题二","科目一选做题三","科目一选做题四","科目一选做题五"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                },
-                "满分学习":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["满分精选试题一","满分精选试题二","满分精选试题三","满分精选试题四","满分精选试题五","满分精选试题六","满分精选试题七","满分精选试题八","大车满分必学多选一","大车满分必学多选二","大车满分必学多选三"]},
-                        {color:"btn-orange",list:["满分常识题一","满分常识题二","满分常识题三","满分常识题四","客车专用试题"]},
-                        {color:"btn-blue",list:["大车满分专用一","大车满分专用二"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                }
-            },
-            "货车":{
-                "科目一":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目一必考题一","科目一必考题二","科目一必考题三","科目一必考题四","科目一必考题五","科目一必考题六"]},
-                        {color:"btn-orange",list:["科目一强化试题一","科目一强化试题二","科目一强化试题三","专用题一","科目一新增常识题","货车专用试题"]},
-                        {color:"btn-blue",list:["科目一选做题一","科目一选做题二","科目一选做题三","科目一选做题四","科目一选做题五"]}
-                    ],
-                    "考前集训":[{color:"btn-red",list:["科目一集训一","科目一集训二","科目一集训三","科目一集训四"]}],
-                    "考前冲刺":[{color:"btn-red",list:["科目一冲刺一","科目一冲刺二"]}]
-                },
-                "科目四":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目四必考题一","科目四必考题二","科目四必考题三","科目四必考题四","科目四必考题五","考前必做"]},
-                        {color:"btn-blue",list:["科目四选做题一","科目四选做题二","科目四选做题三","科目四选做题四","科目四选做题五","科目四选做题六"]},
-                        {color:"btn-blue",list:["科目四专用题一","科目四专用题二","科目四巩固题一","科目四货车专用"]}
-                    ],
-                    "考前集训":[{color:"btn-red",list:["科目四集训一","科目四集训二","科目四集训三","科目四集训四"]}],
-                    "考前冲刺":[{color:"btn-red",list:["科目四冲刺一","科目四冲刺二"]}]
-                },
-                "注销恢复":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["科目一必考题一","科目一必考题二","科目一必考题三","科目一必考题四","科目一必考题六"]},
-                        {color:"btn-orange",list:["科目一强化试题一","科目一强化试题二","科目一强化试题三","科目一新增常识题","货车专用试题"]},
-                        {color:"btn-blue",list:["科目一选做题一","科目一选做题二","科目一选做题三","科目一选做题四","科目一选做题五"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                },
-                "满分学习":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["满分精选试题一","满分精选试题二","满分精选试题三","满分精选试题四","满分精选试题五","满分精选试题六","满分精选试题七","满分精选试题八","大车满分必学多选一","大车满分必学多选二","大车满分必学多选三"]},
-                        {color:"btn-orange",list:["满分常识题一","满分常识题二","满分常识题三","满分常识题四","货车专用试题"]},
-                        {color:"btn-blue",list:["大车满分专用一","大车满分专用二"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                }
-            },
-            "摩托车":{
-                "科目一":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["摩托车科目一必考一","摩托车科目一必考二","摩托车科目一必考三"]},
-                        {color:"btn-orange",list:["摩托车新规题"]},
-                        {color:"btn-blue",list:["摩托车科目一选做一","摩托车科目一选做二","摩托车科目一选做三"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[{color:"btn-red",list:["摩托车科目一考前冲刺"]}]
-                },
-                "科目四":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["摩托车科目四必考一","摩托车科目四必考二","摩托车科目四必考三","摩托车科目四必考四"]},
-                        {color:"btn-blue",list:["摩托车科目四选做一"]},
-                        {color:"btn-blue",list:[]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[{color:"btn-red",list:["摩托车科目四考前冲刺"]}]
-                },
-                "注销恢复":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["摩托车科目一必考一","摩托车科目一必考二","摩托车科目一必考三"]},
-                        {color:"btn-orange",list:["摩托车新规题"]},
-                        {color:"btn-blue",list:["摩托车科目一选做一","摩托车科目一选做二","摩托车科目一选做三"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                },
-                "满分学习":{
-                    "精选试卷":[
-                        {color:"btn-red",list:["摩托车科目一必考一","摩托车科目一必考二","摩托车科目一必考三"]},
-                        {color:"btn-orange",list:["满分常识题一","摩托车新规题","满分常识题二","满分常识题三","满分常识题四"]},
-                        {color:"btn-blue",list:["摩托车科目一选做一","摩托车科目一选做二","摩托车科目一选做三"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                }
-            },
-            "三力测试":{
-                "all":{
-                    "精选试卷":[
-                        {color:"btn-orange",list:["三力测试一"]},
-                        {color:"btn-orange",list:["三力测试二"]},
-                        {color:"btn-orange",list:["三力测试三"]}
-                    ],
-                    "考前集训":[],
-                    "考前冲刺":[]
-                }
-            },
-            "无人机":{
-                "视距内驾驶员":{
-                    "多旋翼无人机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "固定翼无人机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三","固定翼无人机专用"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "无人直升机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三","无人直升机专用"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "垂直起降无人机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    }
-                },
-                "超视距驾驶员":{
-                    "多旋翼无人机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "固定翼无人机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三","固定翼无人机专用"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "无人直升机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三","无人直升机专用"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "垂直起降无人机":{
-                        "精选试卷":[
-                            {color:"btn-blue",list:["无人机专用试题一","无人机专用试题二","无人机专用试题三","无人机专用试题四","无人机专用试题五"]},
-                            {color:"btn-blue",list:["无人机专用试题六","无人机专用试题七","无人机专用试题八","无人机专用试题九","无人机专用试题十"]},
-                            {color:"btn-blue",list:["无人机专用试题十一","无人机专用试题十二","无人机专用试题十三"]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    }
-                },
-                "教员":{
-                    "多旋翼无人机":{
-                        "精选试卷":[
-                            {color:"btn-orange",list:["无人机教员试题一"]},
-                            {color:"btn-orange",list:["无人机教员试题二"]},
-                            {color:"btn-orange",list:[]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "固定翼无人机":{
-                        "精选试卷":[
-                            {color:"btn-orange",list:["无人机教员试题一"]},
-                            {color:"btn-orange",list:["无人机教员试题二"]},
-                            {color:"btn-orange",list:[]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "无人直升机":{
-                        "精选试卷":[
-                            {color:"btn-orange",list:["无人机教员试题一"]},
-                            {color:"btn-orange",list:["无人机教员试题二"]},
-                            {color:"btn-orange",list:[]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    },
-                    "垂直起降无人机":{
-                        "精选试卷":[
-                            {color:"btn-orange",list:["无人机教员试题一"]},
-                            {color:"btn-orange",list:["无人机教员试题二"]},
-                            {color:"btn-orange",list:[]}
-                        ],
-                        "考前集训":[],
-                        "考前冲刺":[]
-                    }
-                }
-            }
-        };
+        let bankConfig = {};
+
+        // 加载试卷分类配置
+        async function loadBankConfig(){
+            const res = await fetch('./question_bank/bank_list.json');
+            bankConfig = await res.json();
+            renderQuestion();
+        }
 
         function renderQuestion(){
             let box = document.getElementById("questionBox");
@@ -737,25 +463,32 @@
                 droneSelectDom.classList.add('show');
                 tabWrap.classList.add('hide-area');
                 modeWrap.classList.remove('hide-area');
-                list = questionData.无人机[currLicense][currDroneType][currMode]||[];
+                list = bankConfig.无人机[currLicense][currDroneType][currMode]||[];
             }else if(currCar === "三力测试"){
                 droneSelectDom.classList.remove('show');
                 tabWrap.classList.add('hide-area');
                 modeWrap.classList.add('hide-area');
-                list = questionData["三力测试"]["all"]["精选试卷"];
+                list = bankConfig["三力测试"]["all"]["精选试卷"];
             }else{
                 droneSelectDom.classList.remove('show');
                 tabWrap.classList.remove('hide-area');
                 modeWrap.classList.remove('hide-area');
-                list = questionData[currCar][currSubject][currMode]||[];
+                list = bankConfig[currCar][currSubject][currMode]||[];
             }
             let wrapClass = currMode === "精选试卷" ? "grid-container" : "grid-single";
             let html = `<div class="${wrapClass}">`;
             list.forEach(col=>{
                 html += `<div class="btn-group">`;
                 col.list.forEach(title=>{
-                    let link = `exam_car_${title}.html`;
-                    html += `<button class="exam-btn ${col.color}" onclick="location.href='${link}'">${title}</button>`;
+                    // 拼接全部5个参数+试卷名称
+                    const params = new URLSearchParams();
+                    params.append('car',currCar);
+                    params.append('subj',currSubject);
+                    params.append('mode',currMode);
+                    params.append('lic',currLicense);
+                    params.append('droneTp',currDroneType);
+                    params.append('title',title);
+                    html += `<button class="exam-btn ${col.color}" onclick="location.href='exam.html?${params.toString()}'">${title}</button>`;
                 });
                 html += `</div>`;
             })
@@ -798,11 +531,9 @@
             renderQuestion();
         }
 
-        // 核心改造：模拟考试自动按当前车型/科目/无人机参数存储
         function goSimulationExam() {
             let simConfig = {};
             if(currCar === "无人机"){
-                // 无人机：执照+机型，无科目
                 simConfig = {
                     carType: currCar,
                     license: currLicense,
@@ -810,7 +541,6 @@
                     subject: ""
                 }
             }else{
-                // 普通车型：车型+科目（三力测试科目为空）
                 simConfig = {
                     carType: currCar,
                     subject: currSubject,
@@ -822,7 +552,8 @@
             location.href = "simulation_guide.html";
         }
 
-        renderQuestion();
+        // 初始化读取配置
+        loadBankConfig();
     </script>
 </body>
 </html>
