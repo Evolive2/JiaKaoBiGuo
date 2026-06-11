@@ -173,7 +173,8 @@
             <span>错题记录</span>
         </div>
         <div class="header-right">
-            <span>SGYC202613</span>
+            <!-- 此处改为 id 绑定动态用户名 -->
+            <span id="showUser"></span>
             <button class="logout-btn" onclick="logout()">⏻</button>
         </div>
     </div>
@@ -233,6 +234,10 @@
 // 与主页面存储名称保持一致：errorRecords
 let errorRecords = JSON.parse(localStorage.getItem('errorRecords') || '[]');
 let deleteId = null;
+
+// ========== 新增：读取本地用户名，和 exam.html 逻辑统一 ==========
+const loginName = localStorage.getItem('userName') || "游客";
+document.getElementById('showUser').innerText = loginName;
 
 // 渲染错题列表
 function renderRecords() {
@@ -309,7 +314,6 @@ function clearAllRecords() {
     localStorage.removeItem('errorRecords');
     errorRecords = [];
     renderRecords();
-    hideClearModal();
 }
 
 // 退出登录（和主页面逻辑一致）
