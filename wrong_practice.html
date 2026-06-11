@@ -377,7 +377,7 @@
         <button class="back-btn" onclick="location.href='wrong_record.html'">&lt; 返回</button>
         <span>错题专项练习</span>
         <div class="header-right">
-            <span>SGYC202613</span>
+            <span id="headerUserName"></span>
             <button class="logout-btn" onclick="logout()">⏻</button>
         </div>
     </div>
@@ -393,7 +393,7 @@
             </div>
             <div class="info">
                 <p style="color: #66aaff;">考生信息</p>
-                <p>考生姓名: SGYC202613</p>
+                <p>考生姓名: <span id="sideUserName"></span></p>
                 <p>考试车型: 小车</p>
                 <p>科 &nbsp;&nbsp;&nbsp;&nbsp;目: 科目四</p>
                 <p>练习类型: 错题复盘</p>
@@ -478,6 +478,12 @@
     </div>
 
 <script>
+// 读取本地存储用户名，无则默认 游客
+const userName = localStorage.getItem('userName') || '游客';
+// 赋值到页面两个用户名位置
+document.getElementById('headerUserName').innerText = userName;
+document.getElementById('sideUserName').innerText = userName;
+
 // 工具函数
 function clearBracket(str){
     return str.replace(/【|】/g,"");
